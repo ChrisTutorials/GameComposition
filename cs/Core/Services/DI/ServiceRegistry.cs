@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
 using GameComposition.Core.Interfaces;
 
 namespace GameComposition.Core.Services.DI;
@@ -444,7 +445,7 @@ public class ServiceRegistry : IDisposable
             {
                 // Log disposal errors but don't throw
                 // In a real implementation, you'd use a logger here
-                Console.WriteLine($"Error disposing service: {ex.Message}");
+                Trace.TraceError($"Error disposing service: {ex.Message}");
             }
         }
         _disposables.Clear();

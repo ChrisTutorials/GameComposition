@@ -301,24 +301,24 @@ public sealed class ServiceRegistryTests
     [Fact]
     public void UserId_FromString_WhenWhitespace_ReturnsEmpty()
     {
-        var id = UserId.FromString("  ");
+        var id = GameUserSessions.Core.UserId.FromString("  ");
         Assert.True(id.IsEmpty);
-        Assert.Equal(UserId.Empty, id);
+        Assert.Equal(GameUserSessions.Core.UserId.Empty, id);
     }
 
     [Fact]
     public void UserId_FromString_WhenInvalid_ReturnsEmpty()
     {
-        var id = UserId.FromString("not-a-guid");
+        var id = GameUserSessions.Core.UserId.FromString("not-a-guid");
         Assert.True(id.IsEmpty);
-        Assert.Equal(UserId.Empty, id);
+        Assert.Equal(GameUserSessions.Core.UserId.Empty, id);
     }
 
     [Fact]
     public void UserId_FromString_WhenValid_Parses()
     {
         var guid = Guid.NewGuid();
-        var id = UserId.FromString(guid.ToString());
+        var id = GameUserSessions.Core.UserId.FromString(guid.ToString());
 
         Assert.False(id.IsEmpty);
         Assert.Equal(guid, id.Value);
@@ -330,7 +330,7 @@ public sealed class ServiceRegistryTests
     {
         var profile = UserScopeProfile.Default;
 
-        Assert.Equal(UserId.Empty, profile.UserId);
+        Assert.Equal(GameUserSessions.Core.UserId.Empty, profile.UserId);
         Assert.Equal("User", profile.Name);
     }
 
