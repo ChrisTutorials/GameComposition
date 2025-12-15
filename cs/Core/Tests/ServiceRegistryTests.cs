@@ -74,6 +74,17 @@ public sealed class ServiceRegistryTests
     }
 
     [Fact]
+    public void TryGetService_WhenNotRegistered_ReturnsFalseAndNull()
+    {
+        var registry = new ServiceRegistry();
+
+        var ok = registry.TryGetService<object>(out var service);
+
+        Assert.False(ok);
+        Assert.Null(service);
+    }
+
+    [Fact]
     public void GetService_Factory_CreatesNewInstanceEachCall()
     {
         var registry = new ServiceRegistry();
@@ -83,6 +94,19 @@ public sealed class ServiceRegistryTests
         var b = registry.GetService<FactoryService>();
 
         Assert.NotSame(a, b);
+    }
+
+    [Fact]
+    public void GetServiceLifetime_ReturnsExpectedLifetimeForEachRegistrationKind()
+    {
+        var registry = new ServiceRegistry();
+        registry.RegisterSingleton("hi");
+        registry.RegisterFactory(() => new FactoryService());
+        registry.RegisterScoped(() => new ScopedService());
+
+        Assert.Equal(ServiceLifetime.Singleton, registry.GetServiceLifetime<string>());
+        Assert.Equal(ServiceLifetime.Transient, registry.GetServiceLifetime<FactoryService>());
+        Assert.Equal(ServiceLifetime.Scoped, registry.GetServiceLifetime<ScopedService>());
     }
 
     [Fact]
@@ -186,6 +210,18 @@ public sealed class ServiceRegistryTests
             b = scopeB.GetService<object>();
 
         Assert.NotSame(a, b);
+    }
+
+    [Fact]
+    public void ServiceScope_GetService_WhenOnlyFactoryRegistered_ResolvesFromScope()
+    {
+        var registry = new ServiceRegistry();
+        registry.RegisterFactory(() => new FactoryService());
+
+        using var scope = registry.CreateScope();
+        var instance = scope.GetService<FactoryService>();
+
+        Assert.NotNull(instance);
     }
 
     [Fact]

@@ -4,11 +4,14 @@
 class_name GCServiceScope
 extends RefCounted
 
-var _registry: GCServiceRegistry
+var _registry: Variant
 var _scoped: Dictionary = {}
 var _disposed: bool = false
 
-func _init(registry: GCServiceRegistry) -> void:
+func _init(registry: Variant) -> void:
+	setup(registry)
+
+func setup(registry: Variant) -> void:
 	_registry = registry
 
 func get_service(key: Variant) -> Variant:

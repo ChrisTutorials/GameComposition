@@ -42,6 +42,20 @@ A typical plugin should follow:
   - thin adapters
   - may implement engine-specific composition roots that **call into** Core services
 
+## Naming & Compatibility Policy
+
+- Runtime-only helper types should keep **parity by concept** across languages.
+- For the 5.1 GDScript backlayer, **RefCounted-based** runtime helpers are the primary target for naming parity (e.g. `GCServiceRegistry`, `GCServiceScope`, `GCSettingsProvider`, `GCUserId`).
+- **Do not** enforce parity for:
+  - folder names
+  - Godot `Node` / `Resource` class names
+  - engine-facing scene/resource paths
+
+Rationale:
+
+- Renaming folders, `Node`s, or `Resource`s is a breaking change for existing Godot projects.
+- RefCounted runtime helpers are safe to rename/align because they are code-level utilities and do not invalidate scene/resource serialization.
+
 ## Composition Concepts
 
 ### ServiceRegistry

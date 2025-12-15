@@ -1,0 +1,23 @@
+# Build artifacts
+bin/
+obj/
+artifacts/
+
+# Coverage / test outputs
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+# Godot / editor junk
+.godot/
+
+# OS/IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Nested build artifacts
+**/bin/
+**/obj/
+**/artifacts/

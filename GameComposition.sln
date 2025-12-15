@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "cs", "cs", "{043C5643-8786-
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{1A85C015-31B4-E711-038E-EE8ADD91EEE6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameComposition.Core", "cs\Core\Core\GameComposition.Core.csproj", "{3F9AAA29-100E-41E7-84F7-895A7FC5CF6B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameComposition.Core", "cs\Core\GameComposition.Core.csproj", "{3F9AAA29-100E-41E7-84F7-895A7FC5CF6B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameComposition.Core.Tests", "cs\Core\Tests\GameComposition.Core.Tests.csproj", "{7B50BE6A-DBF6-4EFE-B7F6-22081E4E6D7A}"
 EndProject
