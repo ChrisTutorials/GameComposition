@@ -9,23 +9,23 @@ var _scoped: Dictionary = {}
 var _disposed: bool = false
 
 func _init(registry: GCServiceRegistry) -> void:
-_registry = registry
+	_registry = registry
 
 func get_service(key: Variant) -> Variant:
-if _disposed:
-push_error("GCServiceScope is disposed")
-assert(false)
-if _scoped.has(key):
-return _scoped[key]
-var created := _registry._create_scoped_service(key)
-if created == null:
-push_error("Scoped service not registered: %s" % [key])
-assert(false)
-_scoped[key] = created
-return created
+	if _disposed:
+		push_error("GCServiceScope is disposed")
+		assert(false)
+	if _scoped.has(key):
+		return _scoped[key]
+	var created := _registry._create_scoped_service(key)
+	if created == null:
+		push_error("Scoped service not registered: %s" % [key])
+		assert(false)
+	_scoped[key] = created
+	return created
 
 func dispose() -> void:
-if _disposed:
-return
-_scoped.clear()
-_disposed = true
+	if _disposed:
+		return
+	_scoped.clear()
+	_disposed = true
