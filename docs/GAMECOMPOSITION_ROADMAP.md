@@ -9,7 +9,9 @@ description: GameComposition production readiness roadmap (C# + GDScript)
 This roadmap covers making **GameComposition** production-ready as:
 
 - `GameComposition.Core` (pure C#, engine-agnostic, NuGet packable)
-- `gdscript/composition` (Godot 4.x / “5.1 backlayer” helper scripts)
+
+**Note (2025-12-15)**: The GDScript backlayer is deprecated and will be removed.
+GameComposition will be maintained as **C# only** going forward.
 
 ## Horizon
 
@@ -70,15 +72,19 @@ This roadmap covers making **GameComposition** production-ready as:
      - [ ] breaking behavior changes require a version bump + changelog
    - Depends on: CI green
 
-4. [ ] **GDScript backlayer correctness + determinism**
-   - [ ] Confirm the `gdscript/composition/*.gd` scripts parse cleanly in a Godot project
-   - [x] Add a minimal GDScript usage sample or smoke test plan (even if manual) documenting: `docs/GDSCRIPT_COMPOSITION_SMOKE_GUIDE.md` (2025-12-15)
-     - [ ] registry usage
-     - [ ] scope usage
-     - [ ] settings provider usage
+4. [ ] **Framework boundaries and canonical identity**
+   - [x] Define ownership boundaries (composition vs session domain): `docs/FRAMEWORK_BOUNDARIES_GAMECOMPOSITION_VS_GAMEUSERSESSIONS.md` (2025-12-15)
+   - [x] Canonical `UserId` lives in GameUserSessions (`GameUserSessions.Core.UserId`) (2025-12-15)
    - [ ] Done when:
-     - [ ] scripts load without errors in a clean Godot project
-     - [ ] docs show canonical usage
+     - [ ] downstream plugins no longer reference `GameComposition.Core.Types.UserId`
+     - [ ] DLL distribution bundles both `GameComposition.Core.dll` and `PlayerSessions.Core.dll`
+   - Depends on: none
+
+5. [x] **GDScript backlayer (deprecated)**
+   - Decision: do not build or ship a GDScript composition framework.
+   - Done when:
+     - [ ] `gdscript/` folder is removed from the repo.
+     - [ ] docs no longer reference `gdscript/composition`.
    - Depends on: none
 
 ---
@@ -157,4 +163,4 @@ This roadmap covers making **GameComposition** production-ready as:
 ## Notes / Constraints
 
 - `GameComposition.Core` must remain **engine-agnostic** (no Godot/Unity references).
-- Keep the GDScript backlayer small and deterministic.
+- No GDScript framework backlayer is maintained for GameComposition.

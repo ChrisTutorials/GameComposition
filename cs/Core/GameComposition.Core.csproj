@@ -24,6 +24,11 @@
     <Compile Include="Settings/**/*.cs" />
     <Compile Include="Systems/**/*.cs" />
     <Compile Include="Types/**/*.cs" />
+    <Compile Include="_legacy/**/*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../../GameUserSessions/Core/PlayerSessions.Core/PlayerSessions.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

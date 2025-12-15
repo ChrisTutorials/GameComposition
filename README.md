@@ -1,5 +1,7 @@
 # GameComposition
 
+**Docs:** https://game-composition.pages.dev
+
 Engine-agnostic composition primitives for ChrisTutorials plugins.
 
 ## Goals
