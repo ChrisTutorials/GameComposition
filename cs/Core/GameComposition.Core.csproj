@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+
+    <PackageId>GameComposition.Core</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>ChrisTutorials</Authors>
+    <Description>Engine-agnostic composition primitives (service registry, scopes, user identity, settings providers) for ChrisTutorials plugins.</Description>
+    <RepositoryUrl>https://github.com/ChrisTutorials/GameComposition</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Interfaces/**/*.cs" />
+    <Compile Include="Services/**/*.cs" />
+    <Compile Include="Settings/**/*.cs" />
+    <Compile Include="Systems/**/*.cs" />
+    <Compile Include="Types/**/*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="buildTransitive/**" Pack="true" PackagePath="buildTransitive/" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,13 @@
+/home/chris/game_dev/plugins/framework/GameComposition/cs/Core/bin/Release/net8.0/GameComposition.Core.deps.json
+/home/chris/game_dev/plugins/framework/GameComposition/cs/Core/bin/Release/net8.0/GameComposition.Core.dll
+/home/chris/game_dev/plugins/framework/GameComposition/cs/Core/bin/Release/net8.0/GameComposition.Core.pdb
+/home/chris/game_dev/plugins/framework/GameComposition/cs/Core/bin/Release/net8.0/GameComposition.Core.xml
+/home/chris/game_dev/plugins/framework/GameComposition/cs/Core/obj/Release/net8.0/GameComposition.Core.GeneratedMSBuildEditorConfig.editorconfig
+/home/chris/game_dev/plugins/framework/GameComposition/cs/Core/obj/Release/net8.0/GameComposition.Core.AssemblyInfoInputs.cache
+/home/chris/game_dev/plugins/framework/GameComposition/cs/Core/obj/Release/net8.0/GameComposition.Core.AssemblyInfo.cs
+/home/chris/game_dev/plugins/framework/GameComposition/cs/Core/obj/Release/net8.0/GameComposition.Core.csproj.CoreCompileInputs.cache
+/home/chris/game_dev/plugins/framework/GameComposition/cs/Core/obj/Release/net8.0/GameComposition.Core.dll
+/home/chris/game_dev/plugins/framework/GameComposition/cs/Core/obj/Release/net8.0/refint/GameComposition.Core.dll
+/home/chris/game_dev/plugins/framework/GameComposition/cs/Core/obj/Release/net8.0/GameComposition.Core.xml
+/home/chris/game_dev/plugins/framework/GameComposition/cs/Core/obj/Release/net8.0/GameComposition.Core.pdb
+/home/chris/game_dev/plugins/framework/GameComposition/cs/Core/obj/Release/net8.0/ref/GameComposition.Core.dll
