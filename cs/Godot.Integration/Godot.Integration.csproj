@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>Godot.Integration</AssemblyName>
+    <RootNamespace>Godot.Integration</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Core/GameComposition.Core.csproj" />
+    <ProjectReference Include="../../../GameUserSessions/Core/PlayerSessions.Core/PlayerSessions.Core.csproj" />
+  </ItemGroup>
+
+</Project>
