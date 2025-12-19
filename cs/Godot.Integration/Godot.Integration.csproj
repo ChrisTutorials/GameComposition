@@ -11,7 +11,6 @@
 
   <ItemGroup>
     <ProjectReference Include="../Core/GameComposition.Core.csproj" />
-    <ProjectReference Include="../../../GameUserSessions/Core/PlayerSessions.Core/PlayerSessions.Core.csproj" />
   </ItemGroup>
 
 </Project>

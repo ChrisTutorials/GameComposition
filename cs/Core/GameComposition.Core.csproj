@@ -28,10 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../../GameUserSessions/Core/PlayerSessions.Core/PlayerSessions.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="buildTransitive/**" Pack="true" PackagePath="buildTransitive/" />
   </ItemGroup>
 

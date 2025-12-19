@@ -9,6 +9,11 @@ This document defines **clear ownership boundaries** between:
 
 Goal: avoid duplicated identity types and avoid mixing domain/session logic into DI primitives.
 
+In addition, this document defines a **hard dependency rule**:
+
+- `GameComposition.Core` and `GameUserSessions.Core` must be **agnostic of each other**.
+- Any bridging between the two is allowed only in **explicit integration suites/adapters**, and those must live **outside** both Core assemblies.
+
 ---
 
 ## What GameComposition owns
@@ -60,9 +65,11 @@ It must NOT own:
 
 ## Canonical identity policy (IMPORTANT)
 
-- There must be **exactly one canonical `UserId`** across the framework.
-- Canonical owner: **GameUserSessions.Core (`GameUserSessions.Core.UserId`)**.
-- GameComposition consumes that type.
+Core policy:
+
+- `GameComposition.Core` and `GameUserSessions.Core` must not share identity types via direct references.
+- If a single canonical identity type is desired, it must live in a **third shared package** (e.g. a small `*.Primitives` library) that both cores can depend on without depending on each other.
+- If a shared primitives package is not used, each core may define its own identity representation, and **integration** is responsible for mapping between them.
 
 Rationale:
 
@@ -74,19 +81,27 @@ Rationale:
 
 ## Dependency direction
 
-Recommended direction:
+Required direction:
 
-- `GameComposition.Core` **references** `PlayerSessions.Core` (identity types; namespaces are `GameUserSessions.*`)
-- `PlayerSessions.Core` does **not** reference GameComposition
+- `GameComposition.Core` does **not** reference `GameUserSessions.Core`.
+- `GameUserSessions.Core` does **not** reference `GameComposition.Core`.
+- Any dependency between the two must exist only in:
+  - dedicated `*.Integration.*` projects
+  - dedicated `*.Integrations.*.Tests` suites
+  - engine adapters (Godot/Unity) that stitch together the two domains at the application boundary
 
-This keeps identity/session domain clean and prevents DI concerns from bleeding upward.
+This keeps identity/session domain clean, prevents cyclic coupling, and ensures each Core library remains usable in isolation.
 
 ---
 
 ## Distribution guidance (DLL vs NuGet)
 
-- DLL distribution: ship both `GameComposition.Core.dll` and `PlayerSessions.Core.dll` together.
-- NuGet distribution: `GameComposition.Core` package will bring `PlayerSessions.Core` as a dependency.
+- If identity is shared via a third package:
+  - DLL distribution: ship `GameComposition.Core.dll` + `*.Primitives.dll` (and optionally `GameUserSessions.Core.dll` if the host uses it).
+  - NuGet distribution: `GameComposition.Core` should depend only on the shared primitives package.
+- If identity is mapped in integrations:
+  - DLL distribution: ship `GameComposition.Core.dll` and keep any `GameUserSessions` artifacts as host/integration dependencies.
+  - NuGet distribution: avoid expressing a hard dependency between cores; integrations may bring both.
 
 ---
 

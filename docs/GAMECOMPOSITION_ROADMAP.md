@@ -74,10 +74,11 @@ GameComposition will be maintained as **C# only** going forward.
 
 4. [ ] **Framework boundaries and canonical identity**
    - [x] Define ownership boundaries (composition vs session domain): `docs/FRAMEWORK_BOUNDARIES_GAMECOMPOSITION_VS_GAMEUSERSESSIONS.md` (2025-12-15)
-   - [x] Canonical `UserId` lives in GameUserSessions (`GameUserSessions.Core.UserId`) (2025-12-15)
    - [ ] Done when:
-     - [ ] downstream plugins no longer reference `GameComposition.Core.Types.UserId`
-     - [ ] DLL distribution bundles both `GameComposition.Core.dll` and `PlayerSessions.Core.dll`
+     - [ ] `GameComposition.Core` and `GameUserSessions.Core` have no cross-references (Core-to-Core)
+     - [ ] identity strategy is explicitly chosen:
+       - [ ] either a shared `*.Primitives` package exists and both cores depend on it
+       - [ ] or integrations perform explicit mapping between identity representations
    - Depends on: none
 
 5. [x] **GDScript backlayer (deprecated)**

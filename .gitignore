@@ -12,6 +12,9 @@ TestResults/
 # Godot / editor junk
 .godot/
 
+# GodotToolkit artifacts (must never be committed)
+.godottoolkit/
+
 # OS/IDE
 .vscode/
 .idea/

@@ -28,7 +28,7 @@ Those remain plugin-level or game-level responsibilities.
 - It provides:
   - service registry + scopes
   - minimal composition interfaces
-  - user/scope identity primitives
+  - user/scope composition concepts (identity is provided either via a shared primitives package or via host/integration mapping)
   - settings provider primitives
 
 ### Plugins (consumers)
@@ -86,8 +86,14 @@ The **host** owns scope lifetime and disposal.
 
 ### User Identity
 
-`UserId` / `UserScopeProfile` / `IUserScopeProfileProvider` exist to standardize
-"who owns this scope" across plugins.
+`UserScopeProfile` / `IUserScopeProfileProvider` exist to standardize
+"who owns this scope" at the composition layer.
+
+Identity value objects (such as `UserId`) must follow the framework boundary policy:
+
+- `GameComposition.Core` and `GameUserSessions.Core` remain agnostic of each other.
+- If a shared identity type is desired, it lives in a third shared primitives package.
+- Otherwise, the host/integration layer maps between identity representations.
 
 Rule of thumb:
 

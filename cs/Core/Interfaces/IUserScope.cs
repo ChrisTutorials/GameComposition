@@ -1,4 +1,4 @@
-using GameUserSessions.Core;
+using GameComposition.Core.Types;
 
 namespace GameComposition.Core.Interfaces
 {
@@ -12,6 +12,6 @@ namespace GameComposition.Core.Interfaces
         /// <summary>
         /// Identifier of the user this scope belongs to.
         /// </summary>
-        GameUserSessions.Core.UserId UserId { get; }
+        UserId UserId { get; }
     }
 }
