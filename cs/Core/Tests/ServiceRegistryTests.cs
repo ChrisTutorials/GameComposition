@@ -2,6 +2,7 @@ using System;
 using GameComposition.Core.Settings;
 using GameComposition.Core.Services.DI;
 using GameComposition.Core.Types;
+using GameFramework.Primitives.Types;
 using Xunit;
 
 namespace GameComposition.Core.Tests;
@@ -301,24 +302,24 @@ public sealed class ServiceRegistryTests
     [Fact]
     public void UserId_FromString_WhenWhitespace_ReturnsEmpty()
     {
-        var id = GameUserSessions.Core.UserId.FromString("  ");
+        var id = UserId.FromString("  ");
         Assert.True(id.IsEmpty);
-        Assert.Equal(GameUserSessions.Core.UserId.Empty, id);
+        Assert.Equal(UserId.Empty, id);
     }
 
     [Fact]
     public void UserId_FromString_WhenInvalid_ReturnsEmpty()
     {
-        var id = GameUserSessions.Core.UserId.FromString("not-a-guid");
+        var id = UserId.FromString("not-a-guid");
         Assert.True(id.IsEmpty);
-        Assert.Equal(GameUserSessions.Core.UserId.Empty, id);
+        Assert.Equal(UserId.Empty, id);
     }
 
     [Fact]
     public void UserId_FromString_WhenValid_Parses()
     {
         var guid = Guid.NewGuid();
-        var id = GameUserSessions.Core.UserId.FromString(guid.ToString());
+        var id = UserId.FromString(guid.ToString());
 
         Assert.False(id.IsEmpty);
         Assert.Equal(guid, id.Value);
@@ -330,7 +331,7 @@ public sealed class ServiceRegistryTests
     {
         var profile = UserScopeProfile.Default;
 
-        Assert.Equal(GameUserSessions.Core.UserId.Empty, profile.UserId);
+        Assert.Equal(UserId.Empty, profile.UserId);
         Assert.Equal("User", profile.Name);
     }
 
