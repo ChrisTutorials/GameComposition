@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using GameComposition.Core.Services.DI;
-using GameUserSessions.Core;
+using GameComposition.Core.Types;
 using Xunit;
 
 namespace GameComposition.Core.Tests;

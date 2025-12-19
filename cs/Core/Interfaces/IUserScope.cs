@@ -1,7 +1,7 @@
-using GameUserSessions.Core;
-
 namespace GameComposition.Core.Interfaces
 {
+    using GameComposition.Core.Types;
+
     /// <summary>
     /// Represents a per-user scope within a GridBuilding session.
     /// Holds state and services that are specific to a single user of
@@ -12,6 +12,6 @@ namespace GameComposition.Core.Interfaces
         /// <summary>
         /// Identifier of the user this scope belongs to.
         /// </summary>
-        GameUserSessions.Core.UserId UserId { get; }
+        UserId UserId { get; }
     }
 }

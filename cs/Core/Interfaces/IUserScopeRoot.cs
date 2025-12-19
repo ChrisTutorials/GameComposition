@@ -1,5 +1,5 @@
 using GameComposition.Core.Services.DI;
-using GameUserSessions.Core;
+using GameComposition.Core.Types;
 
 namespace GameComposition.Core.Interfaces;
 
