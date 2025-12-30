@@ -1,0 +1,67 @@
+using System;
+
+namespace BarkMoon.GameComposition.Core.Types
+{
+    /// <summary>
+    /// Input event data (engine-agnostic).
+    /// Represents user input events in a format independent of any specific engine.
+    /// Core primitive for cross-plugin input handling.
+    /// </summary>
+    public struct InputEventData
+    {
+        /// <summary>
+        /// Type of input event.
+        /// </summary>
+        public InputEventType EventType { get; set; }
+        
+        /// <summary>
+        /// Mouse button involved in the event.
+        /// </summary>
+        public MouseButton MouseButton { get; set; }
+        
+        /// <summary>
+        /// Keyboard key involved in the event.
+        /// </summary>
+        public KeyCode KeyCode { get; set; }
+        
+        /// <summary>
+        /// Input modifiers (shift, ctrl, alt).
+        /// </summary>
+        public InputModifiers Modifiers { get; set; }
+        
+        /// <summary>
+        /// Position of the input event.
+        /// </summary>
+        public Vector2 Position { get; set; }
+        
+        /// <summary>
+        /// Whether the input is pressed (true) or released (false).
+        /// </summary>
+        public bool Pressed { get; set; }
+        
+        /// <summary>
+        /// Whether shift key is pressed.
+        /// </summary>
+        public bool ShiftPressed { get; set; }
+        
+        /// <summary>
+        /// Whether control key is pressed.
+        /// </summary>
+        public bool CtrlPressed { get; set; }
+        
+        /// <summary>
+        /// Whether alt key is pressed.
+        /// </summary>
+        public bool AltPressed { get; set; }
+        
+        /// <summary>
+        /// User ID associated with this input event.
+        /// </summary>
+        public UserId UserId { get; set; }
+        
+        /// <summary>
+        /// Timestamp when the event occurred.
+        /// </summary>
+        public DateTime Timestamp { get; set; }
+    }
+}
