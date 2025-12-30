@@ -1,4 +1,4 @@
-namespace GameComposition.Core.Services.DI;
+namespace BarkMoon.GameComposition.Core.Services.DI;
 
 /// <summary>
 /// Defines the lifetime of a registered service.

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace GameComposition.Core.Services.DI;
+namespace BarkMoon.GameComposition.Core.Services.DI;
 
 /// <summary>
 /// Health status of a service.

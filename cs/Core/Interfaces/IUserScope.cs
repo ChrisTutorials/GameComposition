@@ -1,6 +1,6 @@
-using GameComposition.Core.Types;
+using BarkMoon.GameComposition.Core.Types;
 
-namespace GameComposition.Core.Interfaces
+namespace BarkMoon.GameComposition.Core.Interfaces
 {
     /// <summary>
     /// Represents a per-user scope within a GridBuilding session.

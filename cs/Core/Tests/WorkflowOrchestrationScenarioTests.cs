@@ -2,11 +2,11 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using GameComposition.Core.Services.DI;
-using GameComposition.Core.Types;
+using BarkMoon.GameComposition.Core.Services.DI;
+using BarkMoon.GameComposition.Core.Types;
 using Xunit;
 
-namespace GameComposition.Core.Tests;
+namespace BarkMoon.GameComposition.Core.Tests;
 
 public sealed class WorkflowOrchestrationScenarioTests
 {

@@ -1,7 +1,7 @@
-using GameComposition.Core.Services.DI;
-using GameComposition.Core.Types;
+using BarkMoon.GameComposition.Core.Services.DI;
+using BarkMoon.GameComposition.Core.Types;
 
-namespace GameComposition.Core.Interfaces;
+namespace BarkMoon.GameComposition.Core.Interfaces;
 
 /// <summary>
 /// Composition root for a specific user scope.

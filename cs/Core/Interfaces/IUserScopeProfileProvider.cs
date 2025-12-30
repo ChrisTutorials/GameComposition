@@ -1,6 +1,6 @@
-using GameComposition.Core.Types;
+using BarkMoon.GameComposition.Core.Types;
 
-namespace GameComposition.Core.Interfaces;
+namespace BarkMoon.GameComposition.Core.Interfaces;
 
 /// <summary>
 /// Provides the user-scoped profile used to create or identify a user service scope.

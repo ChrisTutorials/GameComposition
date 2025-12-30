@@ -1,4 +1,4 @@
-namespace GameComposition.Core.Services.DI;
+namespace BarkMoon.GameComposition.Core.Services.DI;
 
 /// <summary>
 /// Interface for service health monitoring.

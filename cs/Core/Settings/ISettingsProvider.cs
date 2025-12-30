@@ -1,4 +1,4 @@
-namespace GameComposition.Core.Settings;
+namespace BarkMoon.GameComposition.Core.Settings;
 
 /// <summary>
 /// Provides settings of type <typeparamref name="TSettings"/> to runtime services.

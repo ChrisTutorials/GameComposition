@@ -1,4 +1,4 @@
-namespace GameComposition.Core.Types;
+namespace BarkMoon.GameComposition.Core.Types;
 
 /// <summary>
 /// Identifies a user scope and provides a human-readable scope name.
@@ -12,3 +12,4 @@ public readonly record struct UserScopeProfile(UserId UserId, string Name)
     /// </summary>
     public static UserScopeProfile Default => new(UserId.Empty, "User");
 }
+

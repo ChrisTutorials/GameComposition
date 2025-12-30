@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace GameComposition.Core.Services.DI;
+namespace BarkMoon.GameComposition.Core.Services.DI;
 
 /// <summary>
 /// Implementation of service scope for scoped services.
@@ -42,7 +42,7 @@ public class ServiceScope(ServiceRegistry registry) : IServiceScope
             return existing;
         }
 
-        var instance = _registry.CreateScopedService(serviceType)
+        var instance = _registry.CreateScopedService(serviceType, this)
             ?? throw new InvalidOperationException($"Scoped service {serviceType.Name} is not registered");
 
         _scopedServices[serviceType] = instance;

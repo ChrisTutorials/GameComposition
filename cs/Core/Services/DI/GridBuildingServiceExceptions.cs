@@ -1,6 +1,6 @@
 using System;
 
-namespace GameComposition.Core.Services.DI;
+namespace BarkMoon.GameComposition.Core.Services.DI;
 
 /// <summary>
 /// Exception thrown when a requested service is not registered in the service registry.

@@ -1,4 +1,4 @@
-namespace GameComposition.Core.Interfaces;
+namespace BarkMoon.GameComposition.Core.Interfaces;
 
 /// <summary>
 /// Minimal composition root surface used to access services created/configured by a host.

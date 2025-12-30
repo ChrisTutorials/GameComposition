@@ -1,6 +1,6 @@
 using System;
 
-namespace GameComposition.Core.Types
+namespace BarkMoon.GameComposition.Core.Types
 {
     /// <summary>
     /// Strongly-typed identifier for a user of GridBuilding systems.
@@ -47,3 +47,4 @@ namespace GameComposition.Core.Types
         public bool IsEmpty => Value == Guid.Empty;
     }
 }
+

@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
-using GameComposition.Core.Interfaces;
+using BarkMoon.GameComposition.Core.Interfaces;
 
-namespace GameComposition.Core.Services.DI;
+namespace BarkMoon.GameComposition.Core.Services.DI;
 
 /// <summary>
 /// Core service registry - pure C# implementation with no Godot dependencies.
@@ -15,7 +15,7 @@ public class ServiceRegistry : IDisposable
 {
     private readonly Dictionary<Type, object> _singletons = new();
     private readonly Dictionary<Type, Func<object>> _factories = new();
-    private readonly Dictionary<Type, Func<object>> _scopedFactories = new();
+    private readonly Dictionary<Type, Func<IServiceScope, object>> _scopedFactories = new();
     private readonly Dictionary<Type, ServiceLifetime> _lifetimes = new();
     private readonly List<IDisposable> _disposables = new();
     private readonly List<IServiceHealthCheck> _healthChecks = new();
@@ -132,8 +132,110 @@ public class ServiceRegistry : IDisposable
             throw new ServiceRegistrationException($"Scoped service {serviceType.Name} is already registered");
         }
 
-        _scopedFactories[serviceType] = () => factory();
+        _scopedFactories[serviceType] = (scope) => factory();
         _lifetimes[serviceType] = ServiceLifetime.Scoped;
+    }
+
+    /// <summary>
+    /// Registers a scoped service factory that uses the current scope to resolve dependencies.
+    /// </summary>
+    /// <typeparam name="T">Service type</typeparam>
+    /// <param name="factory">Factory function receiving the scope</param>
+    public void RegisterScoped<T>(Func<IServiceScope, T> factory) where T : class
+    {
+        ThrowIfDisposed();
+        var serviceType = typeof(T);
+        
+        if (_factories.ContainsKey(serviceType) || _scopedFactories.ContainsKey(serviceType))
+        {
+            throw new ServiceRegistrationException($"Scoped service {serviceType.Name} is already registered");
+        }
+
+        _scopedFactories[serviceType] = (scope) => factory(scope);
+        _lifetimes[serviceType] = ServiceLifetime.Scoped;
+    }
+
+    /// <summary>
+    /// Registers a scoped service with auto-wiring.
+    /// Dependencies will be resolved from the active scope.
+    /// </summary>
+    /// <typeparam name="T">Service type</typeparam>
+    public void RegisterScoped<T>() where T : class
+    {
+        ThrowIfDisposed();
+        var serviceType = typeof(T);
+        
+        if (_factories.ContainsKey(serviceType) || _scopedFactories.ContainsKey(serviceType))
+        {
+            throw new ServiceRegistrationException($"Service {serviceType.Name} is already registered");
+        }
+
+        _scopedFactories[serviceType] = (scope) => CreateInstanceWithScope(serviceType, scope);
+        _lifetimes[serviceType] = ServiceLifetime.Scoped;
+    }
+
+    /// <summary>
+    /// Registers a scoped service implementation for an interface with auto-wiring.
+    /// </summary>
+    /// <typeparam name="TService">Service interface</typeparam>
+    /// <typeparam name="TImplementation">Service implementation</typeparam>
+    public void RegisterScoped<TService, TImplementation>() 
+        where TService : class 
+        where TImplementation : class, TService
+    {
+        ThrowIfDisposed();
+        var serviceType = typeof(TService);
+        var implementationType = typeof(TImplementation);
+        
+        if (_factories.ContainsKey(serviceType) || _scopedFactories.ContainsKey(serviceType))
+        {
+            throw new ServiceRegistrationException($"Service {serviceType.Name} is already registered");
+        }
+
+        _scopedFactories[serviceType] = (scope) => CreateInstanceWithScope(implementationType, scope);
+        _lifetimes[serviceType] = ServiceLifetime.Scoped;
+    }
+
+    private object CreateInstanceWithScope(Type type, IServiceScope scope)
+    {
+        var ctors = type.GetConstructors();
+        if (ctors.Length == 0) throw new InvalidOperationException($"No public constructors for {type.Name}");
+        
+        // Pick first constructor (simple DI)
+        var ctor = ctors[0];
+        var parameters = ctor.GetParameters();
+        var args = new object[parameters.Length];
+        
+        for (int i = 0; i < parameters.Length; i++)
+        {
+            args[i] = scope.GetService(parameters[i].ParameterType) 
+                ?? throw new InvalidOperationException($"Could not resolve dependency {parameters[i].ParameterType.Name} for {type.Name}");
+        }
+        
+        return ctor.Invoke(args);
+    }
+
+    /// <summary>
+    /// Creates a scoped service instance.
+    /// </summary>
+    /// <param name="serviceType">Service type</param>
+    /// <param name="scope">The active service scope</param>
+    /// <returns>Service instance or null if not registered</returns>
+    internal object? CreateScopedService(Type serviceType, IServiceScope scope)
+    {
+        ThrowIfDisposed();
+        if (_scopedFactories.TryGetValue(serviceType, out var scopedFactory))
+        {
+            return scopedFactory(scope);
+        }
+
+        // Fall back to factory for scoped services
+        if (_factories.TryGetValue(serviceType, out var factory))
+        {
+            return factory();
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -174,7 +276,7 @@ public class ServiceRegistry : IDisposable
         {
             try
             {
-                return (T)scopedFactory();
+                return (T)scopedFactory(null);
             }
             catch (Exception ex)
             {
@@ -220,7 +322,7 @@ public class ServiceRegistry : IDisposable
         {
             try
             {
-                service = (T)scopedFactory();
+                service = (T)scopedFactory(null);
                 return true;
             }
             catch
@@ -391,22 +493,6 @@ public class ServiceRegistry : IDisposable
     }
 
     /// <summary>
-    /// Creates a scoped service instance.
-    /// </summary>
-    /// <param name="serviceType">Service type</param>
-    /// <returns>Service instance or null if not registered</returns>
-    internal object? CreateScopedService(Type serviceType)
-    {
-        ThrowIfDisposed();
-        if (_scopedFactories.TryGetValue(serviceType, out var scopedFactory))
-        {
-            return scopedFactory();
-        }
-
-        // Fall back to factory for scoped services
-        if (_factories.TryGetValue(serviceType, out var factory))
-        {
-            return factory();
         }
 
         return null;

@@ -1,4 +1,4 @@
-namespace GameComposition.Core.Interfaces
+namespace BarkMoon.GameComposition.Core.Interfaces
 {
     /// <summary>
     /// Interface for service context to enable Godot-free dependency injection
