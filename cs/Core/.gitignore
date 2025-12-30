@@ -1,0 +1,12 @@
+# Coverage reports
+coverage/
+coverage.html/
+coverage.xml/
+*.cobertura.xml
+
+# Build outputs
+bin/
+obj/
+*.dll
+*.pdb
+*.exe

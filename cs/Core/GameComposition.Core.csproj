@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -9,7 +9,7 @@
     <PackageId>BarkMoon.GameComposition.Core</PackageId>
     <AssemblyName>BarkMoon.GameComposition.Core</AssemblyName>
     <RootNamespace>BarkMoon.GameComposition.Core</RootNamespace>
-    <Version>0.1.0</Version>
+    <Version>0.1.0-dev</Version>
     <Authors>ChrisTutorials</Authors>
     <Description>Engine-agnostic composition primitives (service registry, scopes, user identity, settings providers) for BarkMoon plugins.</Description>
   </PropertyGroup>
