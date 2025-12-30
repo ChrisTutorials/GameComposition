@@ -276,7 +276,7 @@ public class ServiceRegistry : IDisposable
         {
             try
             {
-                return (T)scopedFactory(null);
+                return (T)scopedFactory(null!);
             }
             catch (Exception ex)
             {
@@ -322,7 +322,7 @@ public class ServiceRegistry : IDisposable
         {
             try
             {
-                service = (T)scopedFactory(null);
+                service = (T)scopedFactory(null!);
                 return true;
             }
             catch
