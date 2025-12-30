@@ -10,6 +10,11 @@ namespace BarkMoon.GameComposition.Core.Types
         public static readonly Vector2 Zero = new(0, 0);
         public static readonly Vector2 One = new(1, 1);
 
+        public static readonly Vector2 Up = new(0, -1);
+        public static readonly Vector2 Down = new(0, 1);
+        public static readonly Vector2 Left = new(-1, 0);
+        public static readonly Vector2 Right = new(1, 0);
+
         public Vector2(float x, float y) { X = x; Y = y; }
 
         public override bool Equals(object? obj) => obj is Vector2 other && Equals(other);
@@ -22,5 +27,12 @@ namespace BarkMoon.GameComposition.Core.Types
         public static Vector2 operator *(Vector2 a, float scalar) => new(a.X * scalar, a.Y * scalar);
         public override string ToString() => $"({X:F2}, {Y:F2})";
         public Vector2I ToVector2I() => new((int)Math.Round(X), (int)Math.Round(Y));
+
+        public float Length() => (float)Math.Sqrt(X * X + Y * Y);
+        public Vector2 Normalized()
+        {
+            float len = Length();
+            return len > 0 ? this * (1.0f / len) : Zero;
+        }
     }
 }

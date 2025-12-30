@@ -3,7 +3,7 @@ using System;
 namespace BarkMoon.GameComposition.Core.Types
 {
     /// <summary>
-    /// Input event types (Source device)
+    /// Turn input event types (Source device)
     /// </summary>
     public enum InputSourceType
     {

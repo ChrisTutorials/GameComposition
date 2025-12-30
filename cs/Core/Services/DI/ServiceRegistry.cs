@@ -492,11 +492,6 @@ public class ServiceRegistry : IDisposable
         _healthChecks.Clear();
     }
 
-    /// <summary>
-        }
-
-        return null;
-    }
 
     /// <summary>
     /// Disposes all disposable services and clears the registry.

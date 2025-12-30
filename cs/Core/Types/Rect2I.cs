@@ -11,13 +11,16 @@ namespace BarkMoon.GameComposition.Core.Types
         public Vector2I Position;
         public Vector2I Size;
 
-        public int X => Position.X;
-        public int Y => Position.Y;
-        public int Width => Size.X;
-        public int Height => Size.Y;
+        public static readonly Rect2I Zero = new(Vector2I.Zero, Vector2I.Zero);
+
+        public int X { get => Position.X; set => Position.X = value; }
+        public int Y { get => Position.Y; set => Position.Y = value; }
+        public int Width { get => Size.X; set => Size.X = value; }
+        public int Height { get => Size.Y; set => Size.Y = value; }
 
         public int EndX => Position.X + Size.X;
         public int EndY => Position.Y + Size.Y;
+        public Vector2I End => new(Position.X + Size.X, Position.Y + Size.Y);
 
         public Rect2I(Vector2I position, Vector2I size)
         {
