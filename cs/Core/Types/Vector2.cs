@@ -29,6 +29,11 @@ namespace BarkMoon.GameComposition.Core.Types
         public Vector2I ToVector2I() => new((int)Math.Round(X), (int)Math.Round(Y));
 
         public float Length() => (float)Math.Sqrt(X * X + Y * Y);
+        public float LengthSquared() => X * X + Y * Y;
+
+        public float DistanceTo(Vector2 other) => (this - other).Length();
+        public float DistanceSquaredTo(Vector2 other) => (this - other).LengthSquared();
+
         public Vector2 Normalized()
         {
             float len = Length();

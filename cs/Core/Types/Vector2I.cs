@@ -26,5 +26,11 @@ namespace BarkMoon.GameComposition.Core.Types
         public static Vector2I operator *(Vector2I a, int scalar) => new(a.X * scalar, a.Y * scalar);
         public override string ToString() => $"({X}, {Y})";
         public Vector2 ToVector2() => new(X, Y);
+
+        public float Length() => (float)Math.Sqrt(X * X + Y * Y);
+        public int LengthSquared() => X * X + Y * Y;
+
+        public float DistanceTo(Vector2I other) => (this - other).Length();
+        public int DistanceSquaredTo(Vector2I other) => (this - other).LengthSquared();
     }
 }

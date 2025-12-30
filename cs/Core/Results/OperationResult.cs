@@ -8,11 +8,11 @@ namespace BarkMoon.GameComposition.Core.Results
     /// </summary>
     public class OperationResult
     {
-        public bool IsSuccess { get; internal set; }
+        public bool IsSuccess { get; protected set; }
         public bool IsFailure => !IsSuccess;
-        public string ErrorMessage { get; internal set; }
-        public string ErrorCode { get; internal set; }
-        public Dictionary<string, object> ErrorDetails { get; internal set; }
+        public string ErrorMessage { get; protected set; }
+        public string ErrorCode { get; protected set; }
+        public Dictionary<string, object> ErrorDetails { get; protected set; }
 
         public static OperationResult Success() => new OperationResult { IsSuccess = true };
         
@@ -33,7 +33,7 @@ namespace BarkMoon.GameComposition.Core.Results
     /// </summary>
     public class OperationResult<T> : OperationResult
     {
-        public T Value { get; internal set; }
+        public T Value { get; protected set; }
 
         public static OperationResult<T> Success(T value) => new OperationResult<T> { IsSuccess = true, Value = value };
         
@@ -54,8 +54,11 @@ namespace BarkMoon.GameComposition.Core.Results
     /// </summary>
     public class ValidationResult
     {
-        public bool IsValid { get; internal set; }
-        public List<ValidationError> Errors { get; internal set; } = new();
+        public bool IsValid { get; protected set; }
+        public List<ValidationError> Errors { get; protected set; } = new();
+        public List<string> Warnings { get; protected set; } = new();
+        public List<string> Notes { get; protected set; } = new();
+        public Dictionary<string, object> Context { get; protected set; } = new();
 
         public static ValidationResult Success() => new ValidationResult { IsValid = true };
         
@@ -66,10 +69,27 @@ namespace BarkMoon.GameComposition.Core.Results
             return result;
         }
 
+        public static ValidationResult Failure(string message)
+        {
+            var result = new ValidationResult { IsValid = false };
+            result.AddError(message);
+            return result;
+        }
+
         public void AddError(string message, string code = null, string property = null)
         {
             IsValid = false;
             Errors.Add(new ValidationError { Message = message, Code = code, PropertyName = property });
+        }
+
+        public void AddWarning(string message)
+        {
+            Warnings.Add(message);
+        }
+
+        public void AddNote(string message)
+        {
+            Notes.Add(message);
         }
     }
 
