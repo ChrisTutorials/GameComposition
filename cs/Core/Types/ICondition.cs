@@ -3,60 +3,71 @@ namespace BarkMoon.GameComposition.Core.Types;
 /// <summary>
 /// Generic condition system for cross-plugin compatibility.
 /// 
-/// This interface provides a standardized way to evaluate conditions
-/// across different plugins without requiring custom condition implementations.
+/// A condition represents a reusable rule that evaluates whether something
+/// should be allowed or not. Think of it as a "gatekeeper" that checks if
+/// requirements are met before an action can proceed.
 /// 
-/// Plugins can use this for drop conditions, crafting requirements,
-/// trading prerequisites, and other conditional logic.
+/// For detailed examples, see: /docs/game-composition/content/examples.md
 /// </summary>
 public interface ICondition<TContext>
 {
     /// <summary>
-    /// Unique identifier for this condition
+    /// Unique identifier for this condition.
+    /// Used for configuration, debugging, and registry lookups.
     /// </summary>
     string Id { get; }
     
     /// <summary>
-    /// Display name for this condition
+    /// Display name for this condition.
+    /// Human-readable name shown in UI, tooltips, or debug output.
     /// </summary>
     string Name { get; }
     
     /// <summary>
-    /// Description of what this condition checks
+    /// Description of what this condition checks.
+    /// Detailed explanation used for tooltips and documentation.
     /// </summary>
     string Description { get; }
     
     /// <summary>
-    /// Priority for condition evaluation (higher = evaluated first)
+    /// Priority for condition evaluation (higher = evaluated first).
+    /// Used for optimization by checking important conditions first.
     /// </summary>
     int Priority { get; }
     
     /// <summary>
-    /// Whether this condition is inverted (negated)
+    /// Whether this condition is inverted (negated).
+    /// When true, the condition result is inverted before returning.
     /// </summary>
     bool IsInverted { get; }
     
     /// <summary>
-    /// Logical operator for combining with other conditions
+    /// Logical operator for combining with other conditions.
+    /// Determines how this condition interacts with others in condition sets.
     /// </summary>
     ConditionOperator Operator { get; }
     
     /// <summary>
-    /// Checks if this condition is satisfied given the context
+    /// Checks if this condition is satisfied given the context.
+    /// 
+    /// Core method that evaluates the condition's rule against the provided context.
+    /// Implementation should be pure (no side effects) and deterministic.
     /// </summary>
-    /// <param name="context">The context to evaluate against</param>
-    /// <returns>True if the condition is satisfied</returns>
+    /// <param name="context">The context to evaluate against.</param>
+    /// <returns>True if the condition is satisfied (considering inversion).</returns>
     bool IsSatisfied(TContext context);
     
     /// <summary>
-    /// Validates that this condition is properly configured
+    /// Validates that this condition is properly configured.
+    /// 
+    /// Called before evaluation to ensure the condition has all required properties.
     /// </summary>
-    /// <returns>True if the condition is valid</returns>
+    /// <returns>True if the condition is valid and ready for evaluation.</returns>
     bool IsValid();
 }
 
 /// <summary>
-/// Logical operators for combining conditions
+/// Logical operators for combining conditions.
 /// </summary>
 public enum ConditionOperator
 {
@@ -87,8 +98,14 @@ public enum ConditionOperator
 }
 
 /// <summary>
-/// Base implementation of ICondition for easier condition creation
+/// Base implementation of ICondition with common functionality.
+/// 
+/// Provides foundation for creating specific conditions while handling
+/// common concerns like inversion, validation, and basic properties.
+/// 
+/// For detailed examples, see: /docs/game-composition/content/examples.md
 /// </summary>
+/// <typeparam name="TContext">The context type this condition evaluates</typeparam>
 public abstract class ConditionBase<TContext> : ICondition<TContext>
 {
     public string Id { get; protected set; } = string.Empty;

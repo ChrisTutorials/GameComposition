@@ -4,9 +4,12 @@ namespace BarkMoon.GameComposition.Core.Interfaces
 {
     /// <summary>
     /// Base interface for all framework and domain configurations.
-    /// Provides validation and self-check capabilities.
+    /// Provides validation, copying, and self-check capabilities.
+    /// 
+    /// This interface combines validation and state copying capabilities
+    /// to provide a complete configuration management contract.
     /// </summary>
-    public interface IConfiguration
+    public interface IConfiguration : ICopyable
     {
         /// <summary>
         /// Validates the current configuration state.

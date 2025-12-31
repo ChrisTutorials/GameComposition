@@ -3,68 +3,68 @@ using System.Collections.Generic;
 namespace BarkMoon.GameComposition.Core.Types;
 
 /// <summary>
-/// Standard inventory item representation for cross-plugin compatibility.
+/// Represents an item instance within an inventory system.
 /// 
-/// This class provides a common item format that plugins can use to exchange
-/// inventory data without requiring specific premium plugins.
+/// This represents the actual state of a specific item as it exists in an inventory,
+/// including quantity, current value, and instance-specific properties.
 /// 
-/// Plugins can extend this with additional properties through the Properties
-/// dictionary for domain-specific needs.
+/// For detailed examples, see: /docs/game-composition/content/examples.md
 /// </summary>
 public class InventoryItem
 {
     /// <summary>
-    /// Unique identifier for this item type
+    /// Unique identifier for this item type.
+    /// References the item template/definition, not the specific instance.
     /// </summary>
     public string Id { get; set; } = string.Empty;
     
     /// <summary>
-    /// Type or category of the item (e.g., "weapon", "resource", "consumable")
+    /// Type or category of the item (e.g., "weapon", "resource", "consumable").
     /// </summary>
     public string Type { get; set; } = string.Empty;
     
     /// <summary>
-    /// Display name for this item
+    /// Display name for this item instance.
     /// </summary>
     public string Name { get; set; } = string.Empty;
     
     /// <summary>
-    /// Description of this item
+    /// Description of this item instance.
     /// </summary>
     public string Description { get; set; } = string.Empty;
     
     /// <summary>
-    /// Quantity of this item
+    /// Quantity of this item in this inventory slot.
     /// </summary>
     public int Quantity { get; set; } = 1;
     
     /// <summary>
-    /// Weight of a single item
+    /// Weight of a single item instance.
     /// </summary>
     public float Weight { get; set; }
     
     /// <summary>
-    /// Value of a single item
+    /// Value of a single item instance in the current context.
     /// </summary>
     public float Value { get; set; }
     
     /// <summary>
-    /// Maximum stack size for this item (0 = unlimited)
+    /// Maximum stack size for this item (0 = unlimited).
     /// </summary>
     public int MaxStackSize { get; set; } = 1;
     
     /// <summary>
-    /// Whether this item can be traded
+    /// Whether this item instance can be traded between players/shops.
     /// </summary>
     public bool IsTradeable { get; set; } = true;
     
     /// <summary>
-    /// Whether this item can be dropped
+    /// Whether this item instance can be dropped on the ground.
     /// </summary>
     public bool IsDroppable { get; set; } = true;
     
     /// <summary>
-    /// Whether this item can be destroyed
+    /// Whether this item instance can be destroyed.
     /// </summary>
     public bool IsDestroyable { get; set; } = true;
     
@@ -79,7 +79,12 @@ public class InventoryItem
     public float TotalValue => Quantity * Value;
     
     /// <summary>
-    /// Additional item properties for plugin-specific data
+    /// Additional item properties for plugin-specific and instance-specific data.
+    /// 
+    /// Enables plugins to extend InventoryItem with domain-specific information.
+    /// Common uses: durability, enchantments, ownership, quest data, etc.
+    /// 
+    /// For detailed examples, see: /docs/game-composition/content/examples.md
     /// </summary>
     public Dictionary<string, object> Properties { get; set; } = new();
     
