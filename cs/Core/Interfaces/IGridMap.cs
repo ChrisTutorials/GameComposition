@@ -28,12 +28,12 @@ namespace BarkMoon.GameComposition.Core.Interfaces
         /// <summary>
         /// Size of the grid in coordinates (width, height).
         /// </summary>
-        Vector2I Size { get; }
+        CoreVector2I Size { get; }
 
         /// <summary>
         /// Size of individual grid cells in world units.
         /// </summary>
-        Vector2I CellSize { get; }
+        CoreVector2I CellSize { get; }
 
         /// <summary>
         /// Indicates whether the grid map is properly initialized and ready for use.
@@ -45,20 +45,20 @@ namespace BarkMoon.GameComposition.Core.Interfaces
         /// </summary>
         /// <param name="worldPos">World position in units</param>
         /// <returns>Grid position in cell coordinates</returns>
-        Vector2I WorldToGrid(Vector2 worldPos);
+        CoreVector2I WorldToGrid(CoreVector2 worldPos);
 
         /// <summary>
         /// Converts grid coordinates to world coordinates.
         /// </summary>
         /// <param name="gridPos">Grid position in cell coordinates</param>
         /// <returns>World position in units</returns>
-        Vector2 GridToWorld(Vector2I gridPos);
+        CoreVector2 GridToWorld(CoreVector2I gridPos);
 
         /// <summary>
         /// Checks if a grid position is valid within this grid bounds.
         /// </summary>
         /// <param name="gridPos">Grid position to validate</param>
         /// <returns>True if position is within bounds, false otherwise</returns>
-        bool IsValidPosition(Vector2I gridPos);
+        bool IsValidPosition(CoreVector2I gridPos);
     }
 }
