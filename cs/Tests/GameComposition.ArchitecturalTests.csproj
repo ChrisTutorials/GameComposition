@@ -20,6 +20,7 @@
     <Compile Include="Architectural\NamespaceOrganizationTests.cs" />
     <Compile Include="Architectural\ArchitecturalShouldlyExtensions.cs" />
     <Compile Include="Architectural\CrossDomainSnapshotArchitectureTests.cs" />
+    <Compile Include="Architectural\GridTerminologyConsistencyTests.cs" />
   </ItemGroup>
 
   <ItemGroup>
