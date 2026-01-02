@@ -5,18 +5,27 @@ namespace BarkMoon.GameComposition.Core.Results
     /// <summary>
     /// Represents the result of a framework-level operation.
     /// Provides success/failure status and optional error information.
+    /// Implements IOperationResult for cross-plugin compatibility.
     /// </summary>
-    public class OperationResult
+    public class OperationResult : IOperationResult
     {
+        private static readonly IReadOnlyList<string> EmptyIssues = new List<string>().AsReadOnly();
+        
         public bool IsSuccess { get; protected set; }
         public bool IsFailure => !IsSuccess;
-        public string ErrorMessage { get; protected set; }
-        public string ErrorCode { get; protected set; }
-        public Dictionary<string, object> ErrorDetails { get; protected set; }
+        public string? ErrorMessage { get; protected set; }
+        public string? ErrorCode { get; protected set; }
+        public Dictionary<string, object> ErrorDetails { get; protected set; } = new();
+        
+        /// <summary>
+        /// Returns issues as a read-only list. For simple OperationResult, contains ErrorMessage if present.
+        /// </summary>
+        public virtual IReadOnlyList<string> Issues => 
+            string.IsNullOrEmpty(ErrorMessage) ? EmptyIssues : new List<string> { ErrorMessage }.AsReadOnly();
 
         public static OperationResult Success() => new OperationResult { IsSuccess = true };
         
-        public static OperationResult Failure(string errorMessage, string errorCode = null, Dictionary<string, object> errorDetails = null)
+        public static OperationResult Failure(string errorMessage, string? errorCode = null, Dictionary<string, object>? errorDetails = null)
         {
             return new OperationResult
             {
@@ -30,14 +39,15 @@ namespace BarkMoon.GameComposition.Core.Results
 
     /// <summary>
     /// Represents the result of an operation with a generic return value.
+    /// Implements IOperationResult{T} for cross-plugin compatibility.
     /// </summary>
-    public class OperationResult<T> : OperationResult
+    public class OperationResult<T> : OperationResult, IOperationResult<T>
     {
-        public T Value { get; protected set; }
+        public T? Value { get; protected set; }
 
         public static OperationResult<T> Success(T value) => new OperationResult<T> { IsSuccess = true, Value = value };
         
-        public new static OperationResult<T> Failure(string errorMessage, string errorCode = null, Dictionary<string, object> errorDetails = null)
+        public new static OperationResult<T> Failure(string errorMessage, string? errorCode = null, Dictionary<string, object>? errorDetails = null)
         {
             return new OperationResult<T>
             {
