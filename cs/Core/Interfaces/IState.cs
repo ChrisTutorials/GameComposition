@@ -1,41 +1,49 @@
-using Microsoft.Extensions.ObjectPool;
+using System;
 
 namespace BarkMoon.GameComposition.Core.Interfaces
 {
     /// <summary>
-    /// Enhanced marker interface for state objects (Layer 1/2 Data).
-    /// State = Pure Data Only - no business logic allowed.
-    /// 
-    /// <para>
-    /// <strong>Performance Requirements:</strong>
-    /// Implementations should use Microsoft.Extensions.ObjectPool for collections to eliminate allocations
-    /// in high-frequency scenarios. This ensures consistent frame rates and reduces GC pressure.
-    /// </para>
-    /// 
-    /// <para>
-    /// <strong>Template Pattern:</strong>
-    /// Think of state objects like Godot packed scenes - they should be reusable templates
-    /// that can be quickly instantiated and reset rather than created from scratch.
-    /// </para>
-    /// 
-    /// <para>
-    /// <strong>Required Methods for Pooling:</strong>
-    /// - <c>Reset()</c>: Clear all data and return to "factory fresh" state
-    /// - <c>Initialize(ObjectPool)</c>: Set up Microsoft.Extensions.ObjectPool collection pools
-    /// </para>
-    /// 
-    /// <para>
-    /// <strong>State Lifecycle Properties:</strong>
-    /// - <c>IsInitialized</c>: Whether the state has been properly initialized
-    /// - <c>IsReady</c>: Whether the state is ready for operations (domain-specific)
-    /// </para>
+    /// Interface for pure data state objects.
+    /// State contains only data properties - NO methods, events, or service logic.
+    /// Services own the state and provide snapshots for external access.
     /// </summary>
     public interface IState
     {
         /// <summary>
-        /// Gets whether the state is ready for operations.
-        /// This is domain-specific and indicates the state has all required data for its purpose.
+        /// Gets the timestamp of the last state update.
+        /// Used for change detection and cache invalidation.
+        /// </summary>
+        double LastUpdated { get; }
+        
+        /// <summary>
+        /// Gets whether the state is currently ready for use.
+        /// Indicates if all required dependencies and data are properly initialized.
         /// </summary>
         bool IsReady { get; }
+    }
+
+    /// <summary>
+    /// Generic snapshot interface for typed state access.
+    /// Provides strongly-typed access to state data while maintaining immutability.
+    /// </summary>
+    /// <typeparam name="TState">The type of state this snapshot represents.</typeparam>
+    public interface ISnapshot<TState> : ISnapshot where TState : IState
+    {
+        /// <summary>
+        /// Gets the timestamp when this snapshot was created.
+        /// Used for change detection and cache invalidation.
+        /// </summary>
+        DateTime SnapshotTimestamp { get; }
+        
+        /// <summary>
+        /// Gets the state version at the time of snapshot creation.
+        /// Used to detect if the underlying state has changed.
+        /// </summary>
+        double StateVersion { get; }
+        
+        /// <summary>
+        /// Gets the immutable state data from this snapshot.
+        /// </summary>
+        new TState Data { get; }
     }
 }
