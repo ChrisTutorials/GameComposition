@@ -5,13 +5,21 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <!-- Isolate build artifacts to avoid conflicts with other projects in the same folder -->
+    <BaseIntermediateOutputPath>obj\ArchitecturalTests\</BaseIntermediateOutputPath>
+    <OutputPath>bin\ArchitecturalTests\</OutputPath>
+    <!-- Disable default compile items to explicitly control what is built -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
 
-  <!-- Exclude broken architectural test files -->
   <ItemGroup>
-    <Compile Remove="Architectural\CrossPluginArchitecturalTests.cs" />
-    <Compile Remove="Architectural\YagniViolationTests.cs" />
-    <Compile Remove="Architectural\ArchitecturalRulesTests.cs" />
+    <Compile Include="Architectural\SnapshotSecurityTests.cs" />
+    <Compile Include="Architectural\ServiceOwnershipTests.cs" />
+    <Compile Include="Architectural\SnapshotPatternTests.cs" />
+    <Compile Include="Architectural\InterfaceComplianceTests.cs" />
+    <Compile Include="Architectural\NamespaceOrganizationTests.cs" />
+    <Compile Include="Architectural\ArchitecturalShouldlyExtensions.cs" />
+    <Compile Include="Architectural\CrossDomainSnapshotArchitectureTests.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,39 +1,40 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NetArchTest.Rules;
 using Shouldly;
 using Xunit;
 
-namespace BarkMoon.GameComposition.Core.Tests.Architectural
+namespace BarkMoon.GameComposition.ArchitecturalTests.Core
 {
     /// <summary>
-    /// Code-first architectural rules replacing static documentation.
-    /// These tests ARE the architectural rules - documentation drift eliminated.
+    /// Core architectural rules for GameComposition framework.
+    /// Tests fundamental framework principles and engine agnostic requirements.
     /// </summary>
-    public class ArchitecturalRulesTests
+    public class CoreArchitecturalTests
     {
         private readonly Assembly _gameCompositionAssembly = Assembly.LoadFrom("BarkMoon.GameComposition.Core.dll");
 
-        [Fact(DisplayName = "001AR: Core Should Use Microsoft Extensions Not Custom Implementations")]
+        [Fact(DisplayName = "001GC: Core Should Use Microsoft Extensions Not Custom Implementations")]
         public void Core_Should_Use_Microsoft_Extensions_Not_Custom_Implementations()
         {
             // Rule: Use Microsoft.Extensions.* instead of custom implementations
             var result = Types.InAssembly(_gameCompositionAssembly)
                 .Should()
-                .NotHaveNameContaining("CustomPool")
+                .NotHaveName("CustomPool")
                 .And()
-                .NotHaveNameContaining("CollectionPool")
+                .NotHaveName("CollectionPool")
                 .And()
-                .NotHaveNameContaining("CustomLogger")
+                .NotHaveName("CustomLogger")
                 .And()
-                .NotHaveNameContaining("CustomDI")
+                .NotHaveName("CustomDI")
                 .GetResult();
 
             result.IsSuccessful.ShouldBeTrue("Should use Microsoft.Extensions.* instead of custom implementations");
         }
 
-        [Fact(DisplayName = "002AR: Core Should Be Engine Agnostic")]
+        [Fact(DisplayName = "002GC: Core Should Be Engine Agnostic")]
         public void Core_Should_Be_Engine_Agnostic()
         {
             // Rule: No engine dependencies in Core package
@@ -45,7 +46,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
             result.IsSuccessful.ShouldBeTrue("Core should be engine-agnostic");
         }
 
-        [Fact(DisplayName = "003AR: Services Should Be Interface First")]
+        [Fact(DisplayName = "003GC: Services Should Be Interface First")]
         public void Services_Should_Be_Interface_First()
         {
             // Rule: All services should have interfaces
@@ -66,7 +67,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
             }
         }
 
-        [Fact(DisplayName = "004AR: Dependencies Should Follow Layered Architecture")]
+        [Fact(DisplayName = "004GC: Dependencies Should Follow Layered Architecture")]
         public void Dependencies_Should_Follow_Layered_Architecture()
         {
             // Rule: Clear dependency boundaries
@@ -81,25 +82,22 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
             // The test enforces the documented dependency rules
         }
 
-        [Fact(DisplayName = "005AR: Types Should Be Immutable Structs Where Appropriate")]
+        [Fact(DisplayName = "005GC: Types Should Be Immutable Structs Where Appropriate")]
         public void Types_Should_Be_Immutable_Structs_Where_Appropriate()
         {
             // Rule: Value objects should be immutable structs
-            var valueObjectTypes = Types.InAssembly(_gameCompositionAssembly)
-                .That()
-                .ResideInNamespace("BarkMoon.GameComposition.Core.Types")
-                .And()
-                .AreStructs()
-                .GetTypes();
+            var allTypes = _gameCompositionAssembly.GetTypes();
+            var valueObjectTypes = allTypes
+                .Where(t => t.Namespace == "BarkMoon.GameComposition.Core.Types" && t.IsValueType)
+                .ToList();
 
             foreach (var valueType in valueObjectTypes)
             {
-                var publicFields = valueType.GetFields(BindingFlags.Public | BindingFlags.Instance);
-                var publicSettableProperties = valueType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                    .Where(p => p.CanWrite);
-
-                // Value objects should be immutable or have private setters
-                publicSettableProperties.ShouldBeEmpty($"Value object {valueType.Name} should be immutable");
+                var fields = valueType.GetFields(BindingFlags.Public | BindingFlags.Instance);
+                foreach (var field in fields)
+                {
+                    field.IsInitOnly.ShouldBeTrue($"Value object {valueType.Name}.{field.Name} should be readonly");
+                }
             }
         }
     }

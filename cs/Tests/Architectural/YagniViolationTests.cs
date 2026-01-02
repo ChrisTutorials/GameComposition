@@ -24,7 +24,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
                 ?? throw new InvalidOperationException("Could not load GameComposition assembly");
         }
 
-        [Fact]
+        [Fact(DisplayName = "001YV: Services Should Not Have Unnecessary Wrapper Layers")]
         public void Services_Should_Not_Have_Unnecessary_Wrapper_Layers()
         {
             // Arrange & Act - NetArchTests validation
@@ -79,7 +79,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
                 $"Too many YAGNI violations: {violations.Count}. Consider simplifying service architecture.");
         }
 
-        [Fact]
+        [Fact(DisplayName = "002YV: Performance Services Should Be Focused And Simple")]
         public void Performance_Services_Should_Be_Focused_And_Simple()
         {
             // Arrange & Act - NetArchTests validation
@@ -135,7 +135,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
                 $"Too many YAGNI violations in performance services: {violations.Count}");
         }
 
-        [Fact]
+        [Fact(DisplayName = "003YV: Service Dependencies Should Be Minimal And Focused")]
         public void Service_Dependencies_Should_Be_Minimal_And_Focused()
         {
             // Arrange & Act - NetArchTests validation
@@ -226,7 +226,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
                 $"{serviceName} should have ≤{maxMethodCount} public methods, but has {publicMethods.Count}");
         }
 
-        [Fact]
+        [Fact(DisplayName = "004YV: Wrapper Services Should Not Just Delegate To Microsoft Extensions")]
         public void Wrapper_Services_Should_Not_Just_Delegate_To_Microsoft_Extensions()
         {
             // Arrange & Act - NetArchTests validation

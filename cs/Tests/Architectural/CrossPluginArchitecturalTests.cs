@@ -20,7 +20,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
             Assembly.LoadFrom("BarkMoon.GridPlacement.Godot.dll")
         };
 
-        [Fact]
+        [Fact(DisplayName = "001CP: All Plugins Should Follow Namespace Convention")]
         public void All_Plugins_Should_Follow_Namespace_Convention()
         {
             // Arrange & Act - NetArchTests cross-assembly validation
@@ -39,7 +39,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = "002CP: Core Assemblies Should Not Depend On Godot Assemblies")]
         public void Core_Assemblies_Should_Not_Depend_On_Godot_Assemblies()
         {
             // Arrange & Act - NetArchTests dependency validation
@@ -59,7 +59,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = "003CP: Godot Assemblies Should Depend On Core Assemblies")]
         public void Godot_Assemblies_Should_Depend_On_Core_Assemblies()
         {
             // Arrange & Act - NetArchTests dependency validation
@@ -79,7 +79,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = "004CP: All Plugins Should Use Consistent Interface Naming")]
         public void All_Plugins_Should_Use_Consistent_Interface_Naming()
         {
             // Arrange & Act - NetArchTests interface naming validation
@@ -102,7 +102,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = "005CP: Core Assemblies Should Not Have Engine Dependencies")]
         public void Core_Assemblies_Should_Not_Have_Engine_Dependencies()
         {
             // Arrange & Act - NetArchTests engine dependency validation
@@ -122,7 +122,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = "006CP: All Plugins Should Have Consistent Test Naming")]
         public void All_Plugins_Should_Have_Consistent_Test_Naming()
         {
             // Arrange & Act - NetArchTests test naming validation
@@ -152,7 +152,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = "007CP: Cross Plugin Interfaces Should Be Consistent")]
         public void Cross_Plugin_Interfaces_Should_Be_Consistent()
         {
             // Arrange & Act - NetArchTests interface consistency validation
@@ -180,7 +180,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
             usageResult.IsSuccessful.ShouldBeTrue("GridPlacement.Core should depend on GameComposition.Core");
         }
 
-        [Fact]
+        [Fact(DisplayName = "008CP: All Assemblies Should Be Properly Versioned")]
         public void All_Assemblies_Should_Be_Properly_Versioned()
         {
             // Arrange & Act - NetArchTests assembly validation
@@ -203,7 +203,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = "009CP: Plugin Architecture Should Be Consistent")]
         public void Plugin_Architecture_Should_Be_Consistent()
         {
             // Arrange & Act - NetArchTests architectural pattern validation
