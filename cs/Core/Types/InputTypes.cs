@@ -72,13 +72,28 @@ namespace BarkMoon.GameComposition.Core.Types
     /// </summary>
     public enum KeyCode
     {
+        /// <summary>Unknown or unrecognized key</summary>
         Unknown = 0,
+        
+        /// <summary>Letter keys A-Z</summary>
         A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
+        
+        /// <summary>Number keys 0-9</summary>
         Num0, Num1, Num2, Num3, Num4, Num5, Num6, Num7, Num8, Num9,
+        
+        /// <summary>Special keys</summary>
         Escape, Space, Return, Enter, Backspace, Tab,
+        
+        /// <summary>Arrow keys</summary>
         Up, Down, Left, Right,
+        
+        /// <summary>Editing keys</summary>
         Delete, Insert, Home, End, PageUp, PageDown,
+        
+        /// <summary>Function keys F1-F12</summary>
         F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
+        
+        /// <summary>Modifier keys</summary>
         Shift, Control, Alt
     }
 }

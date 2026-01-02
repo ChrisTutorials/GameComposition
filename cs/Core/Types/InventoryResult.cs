@@ -214,6 +214,10 @@ public class InventoryResult
         }
     }
     
+    /// <summary>
+    /// Returns a string representation of this inventory operation result.
+    /// </summary>
+    /// <returns>A string showing status, items processed, capacity, and error message if any</returns>
     public override string ToString()
     {
         var status = Success ? "SUCCESS" : "FAILURE";

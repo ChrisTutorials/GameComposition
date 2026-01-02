@@ -1,14 +1,6 @@
 namespace BarkMoon.GameComposition.Core.Interfaces
 {
     /// <summary>
-    /// Marker interface for state objects (Layer 1/2 Data).
-    /// State = Pure Data Only - no business logic allowed.
-    /// </summary>
-    public interface IState
-    {
-    }
-
-    /// <summary>
     /// Marker interface for service objects (Layer 2 Business Logic).
     /// Services = Business Logic - all logic goes here.
     /// </summary>
@@ -40,14 +32,6 @@ namespace BarkMoon.GameComposition.Core.Interfaces
     }
 
     /// <summary>
-    /// Represents a component that tracks its current runtime initialization state.
-    /// </summary>
-    public interface IRuntimeState
-    {
-        bool IsInitialized { get; }
-    }
-
-    /// <summary>
     /// Interface for components that support runtime validation.
     /// </summary>
     public interface IValidationSupport
@@ -56,21 +40,5 @@ namespace BarkMoon.GameComposition.Core.Interfaces
         /// Gets the current runtime validation results.
         /// </summary>
         BarkMoon.GameComposition.Core.Results.ValidationResult GetRuntimeValidation();
-    }
-
-    /// <summary>
-    /// Provides readiness information for the Targeting domain.
-    /// </summary>
-    public interface ITargetingStateReadiness
-    {
-        bool IsReady { get; }
-    }
-
-    /// <summary>
-    /// Provides readiness information for the Building domain.
-    /// </summary>
-    public interface IBuildingStateReadiness
-    {
-        bool IsReady { get; }
     }
 }

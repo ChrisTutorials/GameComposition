@@ -146,6 +146,10 @@ public abstract class OperationContext
         return !string.IsNullOrEmpty(OperationId) && Timestamp != default;
     }
     
+    /// <summary>
+    /// Returns a string representation of this operation context.
+    /// </summary>
+    /// <returns>A string showing the context type, operation ID, and position</returns>
     public override string ToString()
     {
         return $"{GetType().Name} {OperationId} at {Position}";

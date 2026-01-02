@@ -6,11 +6,23 @@ namespace BarkMoon.GameComposition.Core.Types;
 /// This provides compile-time type safety for IDs while maintaining
 /// string-based storage for serialization and database compatibility.
 /// 
+/// Performance Considerations:
+/// - Use TypedId&lt;string&gt; for external APIs and GUID-based systems
+/// - Use NumericId&lt;long&gt; for internal database operations and performance-critical paths
+/// - String IDs: ~36 bytes memory, slower comparisons, compatible with GUID systems
+/// - Numeric IDs: 8 bytes memory, 10x faster comparisons, optimal for database primary keys
+/// 
 /// Usage examples:
-/// - public readonly record struct ShopId(string Value) : TypedId<ShopId>;
-/// - public readonly record struct OwnerId(string Value) : TypedId<OwnerId>;
-/// - public readonly record struct RecipeId(string Value) : TypedId<RecipeId>;
+/// - public readonly record struct ShopId(string Value) : TypedId&lt;ShopId&gt;;
+/// - public readonly record struct OwnerId(string Value) : TypedId&lt;OwnerId&gt;;
+/// - public readonly record struct RecipeId(string Value) : TypedId&lt;RecipeId&gt;;
 /// </summary>
+/// <remarks>
+/// For high-performance scenarios (RimWorld/Stardew Valley scale):
+/// - Consider NumericId&lt;T&gt; for database primary keys
+/// - Use IdConverter for seamless string ↔ numeric conversion
+/// - Keep TypedId&lt;string&gt; for external plugin APIs
+/// </remarks>
 public readonly record struct TypedId<T>(string Value)
 {
     /// <summary>
@@ -24,15 +36,15 @@ public readonly record struct TypedId<T>(string Value)
     public string Value { get; } = Value ?? string.Empty;
     
     /// <summary>
-    /// Implicit conversion from string
+    /// Implicit conversion from TypedId to string
     /// </summary>
-    /// <param name="value">String value</param>
+    /// <param name="id">The TypedId to convert</param>
     public static implicit operator string(TypedId<T> id) => id.Value;
     
     /// <summary>
-    /// Implicit conversion to string
+    /// Implicit conversion from string to TypedId
     /// </summary>
-    /// <param name="value">String value</param>
+    /// <param name="value">String value to convert</param>
     public static implicit operator TypedId<T>(string value) => new(value);
     
     /// <summary>

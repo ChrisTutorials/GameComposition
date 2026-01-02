@@ -210,6 +210,10 @@ public class InventoryItem
         return merged;
     }
     
+    /// <summary>
+    /// Returns a string representation of this inventory item.
+    /// </summary>
+    /// <returns>A string in the format "Name xQuantity (Type)"</returns>
     public override string ToString()
     {
         return $"{Name} x{Quantity} ({Type})";

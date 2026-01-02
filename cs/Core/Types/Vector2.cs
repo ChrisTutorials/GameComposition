@@ -39,7 +39,18 @@ namespace BarkMoon.GameComposition.Core.Types
         /// <param name="y">The Y coordinate.</param>
         public Vector2(float x, float y) { X = x; Y = y; }
 
+        /// <summary>
+        /// Determines whether this Vector2 is equal to the specified object using floating-point epsilon comparison.
+        /// </summary>
+        /// <param name="obj">The object to compare with</param>
+        /// <returns>true if the objects are equal; otherwise, false</returns>
         public override bool Equals(object? obj) => obj is Vector2 other && Equals(other);
+        
+        /// <summary>
+        /// Determines whether this Vector2 is equal to the specified Vector2 using floating-point epsilon comparison.
+        /// </summary>
+        /// <param name="other">The Vector2 to compare with</param>
+        /// <returns>true if the vectors are equal within epsilon; otherwise, false</returns>
         public bool Equals(Vector2 other) => Math.Abs(X - other.X) < float.Epsilon && Math.Abs(Y - other.Y) < float.Epsilon;
         /// <summary>
         /// Returns the hash code for this Vector2 instance.
