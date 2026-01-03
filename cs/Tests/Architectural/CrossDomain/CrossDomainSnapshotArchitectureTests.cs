@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.IO;
 using BarkMoon.GameComposition.Core.Interfaces;
+using BarkMoon.GameComposition.Tests.Common;
 using Xunit;
 
 // Explicitly alias the NetArchTest Types class to avoid conflict
@@ -16,7 +17,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
     /// These tests ensure consistent snapshot architecture throughout the entire ecosystem.
     /// Tests are loaded dynamically from all plugin assemblies to enforce universal compliance.
     /// </summary>
-    public class CrossDomainSnapshotArchitectureTests
+    public class CrossDomainSnapshotArchitectureTests : ArchitecturalTestBase
     {
         /// <summary>
         /// Rule 1: ALL snapshots across ALL plugins must implement non-generic ISnapshot interface.
@@ -26,15 +27,15 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
         [Trait("Category", "Architectural")]
         public void All_Snapshots_Must_Implement_Non_Generic_ISnapshot()
         {
-            // Arrange - Load all plugin assemblies
-            var assemblies = LoadAllPluginAssemblies();
+            // Arrange - Load all plugin assemblies using SSOT
+            var assemblies = AllAssemblies;
             var allSnapshotTypes = new List<Type>();
 
             foreach (var assembly in assemblies)
             {
                 var snapshots = ArchTypes.InAssembly(assembly)
                     .That()
-                    .HaveNameEndingWith("Snapshot")
+                    .HaveNameEndingWith("Snapshot", StringComparison.OrdinalIgnoreCase)
                     .And()
                     .AreClasses()
                     .And()
@@ -44,7 +45,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
                 allSnapshotTypes.AddRange(snapshots);
             }
 
-            if (!allSnapshotTypes.Any())
+            if (allSnapshotTypes.Count == 0)
                 return; // No snapshots found in any plugin
 
             // Act & Assert
@@ -66,14 +67,14 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
         public void All_Snapshots_Must_Be_Sealed()
         {
             // Arrange
-            var assemblies = LoadAllPluginAssemblies();
+            var assemblies = AllAssemblies;
             var allSnapshotTypes = new List<Type>();
 
             foreach (var assembly in assemblies)
             {
                 var snapshots = ArchTypes.InAssembly(assembly)
                     .That()
-                    .HaveNameEndingWith("Snapshot")
+                    .HaveNameEndingWith("Snapshot", StringComparison.OrdinalIgnoreCase)
                     .And()
                     .AreClasses()
                     .GetTypes();
@@ -81,7 +82,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
                 allSnapshotTypes.AddRange(snapshots);
             }
 
-            if (!allSnapshotTypes.Any())
+            if (allSnapshotTypes.Count == 0)
                 return;
 
             // Act & Assert
@@ -102,7 +103,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
         public void All_Snapshots_Must_Not_Reference_State_Types()
         {
             // Arrange
-            var assemblies = LoadAllPluginAssemblies();
+            var assemblies = AllAssemblies;
             var allSnapshotTypes = new List<Type>();
             var allStateTypes = new List<Type>();
 
@@ -111,14 +112,14 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
             {
                 var snapshots = ArchTypes.InAssembly(assembly)
                     .That()
-                    .HaveNameEndingWith("Snapshot")
+                    .HaveNameEndingWith("Snapshot", StringComparison.OrdinalIgnoreCase)
                     .And()
                     .AreClasses()
                     .GetTypes();
 
                 var states = ArchTypes.InAssembly(assembly)
                     .That()
-                    .HaveNameEndingWith("State")
+                    .HaveNameEndingWith("State", StringComparison.OrdinalIgnoreCase)
                     .And()
                     .AreClasses()
                     .GetTypes();
@@ -127,7 +128,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
                 allStateTypes.AddRange(states);
             }
 
-            if (!allSnapshotTypes.Any())
+            if (allSnapshotTypes.Count == 0)
                 return;
 
             // Act & Assert
@@ -165,7 +166,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
         public void All_Snapshot_Constructors_Must_Accept_Shared_Data_Types_Only()
         {
             // Arrange
-            var assemblies = LoadAllPluginAssemblies();
+            var assemblies = AllAssemblies;
             var allSnapshotTypes = new List<Type>();
 
             foreach (var assembly in assemblies)
@@ -182,7 +183,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
                 allSnapshotTypes.AddRange(snapshots);
             }
 
-            if (!allSnapshotTypes.Any())
+            if (allSnapshotTypes.Count == 0)
                 return;
 
             // Act & Assert
@@ -208,13 +209,13 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
                         // Allow primitive types, collections, and record types
                         var isAllowedType = paramType.IsPrimitive || 
                                          paramType.IsEnum ||
-                                         paramType.Name.StartsWith("IReadOnlyList") ||
-                                         paramType.Name.StartsWith("IEnumerable") ||
-                                         paramType.Name.EndsWith("Entry") ||
-                                         paramType.Name.EndsWith("Metadata") ||
-                                         paramType.Name.EndsWith("Data") ||
-                                         paramType.Namespace?.Contains("Data") == true ||
-                                         paramType.Namespace?.EndsWith(".Types") == true;
+                                         paramType.Name.StartsWith("IReadOnlyList", StringComparison.OrdinalIgnoreCase) ||
+                                         paramType.Name.StartsWith("IEnumerable", StringComparison.OrdinalIgnoreCase) ||
+                                         paramType.Name.EndsWith("Entry", StringComparison.OrdinalIgnoreCase) ||
+                                         paramType.Name.EndsWith("Metadata", StringComparison.OrdinalIgnoreCase) ||
+                                         paramType.Name.EndsWith("Data", StringComparison.OrdinalIgnoreCase) ||
+                                         paramType.Namespace?.Contains("Data", StringComparison.OrdinalIgnoreCase) == true ||
+                                         paramType.Namespace?.EndsWith(".Types", StringComparison.OrdinalIgnoreCase) == true;
                         
                         isAllowedType.ShouldBeTrue(
                             $"Snapshot {snapshotType.Name} constructor parameter '{param.Name}' of type '{paramType.Name}' " +
@@ -234,7 +235,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
         public void All_State_Classes_Must_Not_Reference_Snapshot_Types()
         {
             // Arrange
-            var assemblies = LoadAllPluginAssemblies();
+            var assemblies = AllAssemblies;
             var allStateTypes = new List<Type>();
             var allSnapshotTypes = new List<Type>();
 
@@ -243,14 +244,14 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
             {
                 var states = ArchTypes.InAssembly(assembly)
                     .That()
-                    .HaveNameEndingWith("State")
+                    .HaveNameEndingWith("State", StringComparison.OrdinalIgnoreCase)
                     .And()
                     .AreClasses()
                     .GetTypes();
 
                 var snapshots = ArchTypes.InAssembly(assembly)
                     .That()
-                    .HaveNameEndingWith("Snapshot")
+                    .HaveNameEndingWith("Snapshot", StringComparison.OrdinalIgnoreCase)
                     .And()
                     .AreClasses()
                     .GetTypes();
@@ -259,7 +260,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
                 allSnapshotTypes.AddRange(snapshots);
             }
 
-            if (!allStateTypes.Any())
+            if (allStateTypes.Count == 0)
                 return;
 
             // Act & Assert
@@ -295,7 +296,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
         public void All_Shared_Data_Types_Must_Be_Immutable_Records()
         {
             // Arrange
-            var assemblies = LoadAllPluginAssemblies();
+            var assemblies = AllAssemblies;
             var allDataTypes = new List<Type>();
 
             // Collect all types in Data namespaces
@@ -311,7 +312,7 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
                 allDataTypes.AddRange(dataTypes);
             }
 
-            if (!allDataTypes.Any())
+            if (allDataTypes.Count == 0)
                 return;
 
             // Act & Assert
@@ -323,70 +324,9 @@ namespace BarkMoon.GameComposition.Core.Tests.Architectural
                                dataType.GetFields().All(f => f.IsInitOnly);
                 
                 isRecord.ShouldBeTrue(
-                    $"Data type {dataType.Name} in assembly {dataType.Assembly.GetName().Name} must be an immutable record. " +
-                    "All shared data types must be immutable records to ensure thread safety and snapshot integrity.");
+                    $"Data type {dataType.Name} in assembly {dataType.Assembly.GetName().Name} should be an immutable record. " +
+                    "Shared data types across the ecosystem must be immutable to ensure thread safety and snapshot compatibility.");
             }
         }
-
-        #region Helper Methods
-
-        /// <summary>
-        /// Dynamically loads all plugin assemblies from the workspace.
-        /// Searches for all .dll files in plugin directories that match the pattern.
-        /// </summary>
-        /// <returns>List of loaded plugin assemblies</returns>
-        private static List<Assembly> LoadAllPluginAssemblies()
-        {
-            var assemblies = new List<Assembly>();
-            var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            
-            // Look for plugin assemblies in common locations
-            var searchPaths = new[]
-            {
-                // Test output directory
-                Path.Combine(baseDir),
-                // Relative paths for development
-                Path.GetFullPath(Path.Combine(baseDir, "..", "..", "Core", "bin", "Debug", "net10.0")),
-                Path.GetFullPath(Path.Combine(baseDir, "..", "..", "..", "..", "..", "plugins", "framework", "GameComposition", "cs", "Core", "bin", "Debug", "net10.0")),
-                Path.GetFullPath(Path.Combine(baseDir, "..", "..", "..", "..", "..", "plugins", "gameplay", "GridPlacement", "cs", "Core", "bin", "Debug", "net10.0")),
-            };
-
-            var assemblyNames = new[]
-            {
-                "BarkMoon.GameComposition.Core.dll",
-                "BarkMoon.GridPlacement.Core.dll"
-                // Add more plugin assemblies as they are created
-            };
-
-            foreach (var searchPath in searchPaths)
-            {
-                if (!Directory.Exists(searchPath)) continue;
-
-                foreach (var assemblyName in assemblyNames)
-                {
-                    var assemblyPath = Path.Combine(searchPath, assemblyName);
-                    if (File.Exists(assemblyPath))
-                    {
-                        try
-                        {
-                            var assembly = Assembly.LoadFrom(assemblyPath);
-                            if (!assemblies.Contains(assembly))
-                            {
-                                assemblies.Add(assembly);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            // Log error but continue loading other assemblies
-                            Console.WriteLine($"Failed to load assembly {assemblyPath}: {ex.Message}");
-                        }
-                    }
-                }
-            }
-
-            return assemblies;
-        }
-
-        #endregion
     }
 }

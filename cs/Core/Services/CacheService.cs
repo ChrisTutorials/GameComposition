@@ -75,7 +75,7 @@ namespace BarkMoon.GameComposition.Core.Services
                 throw new ArgumentException("Cache key cannot be null or empty", nameof(key));
 
             if (factory == null)
-                throw new ArgumentNullException(nameof(factory));
+                ArgumentNullException.ThrowIfNull(factory);
 
             var options = _optionsPool.Get();
             try
@@ -109,7 +109,7 @@ namespace BarkMoon.GameComposition.Core.Services
                 throw new ArgumentException("Cache key cannot be null or empty", nameof(key));
 
             if (factory == null)
-                throw new ArgumentNullException(nameof(factory));
+                ArgumentNullException.ThrowIfNull(factory);
 
             var options = _optionsPool.Get();
             try

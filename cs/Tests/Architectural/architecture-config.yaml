@@ -1,0 +1,161 @@
+# Cross-Plugin Architecture Configuration
+# This file defines architectural rules and allowed exceptions for cross-plugin validation
+
+# Allowed cross-domain dependencies (Source -> Target)
+# Format: "SourceDomain->TargetDomain"
+allowed_cross_domain_dependencies:
+  # Input flow dependencies
+  - "Input->Targeting"
+  - "Input->Grid"
+  
+  # Targeting flow dependencies  
+  - "Targeting->Manipulation"
+  - "Targeting->Grid"
+  
+  # Manipulation flow dependencies
+  - "Manipulation->Placement"
+  - "Manipulation->Grid"
+  
+  # Workflow orchestration (workflows can coordinate any domain)
+  - "Workflows->Input"
+  - "Workflows->Targeting"
+  - "Workflows->Manipulation"
+  - "Workflows->Placement"
+  - "Workflows->Grid"
+
+# Allowed namespace violations (for legacy compatibility)
+allowed_namespace_violations:
+  - "Legacy.*"
+  - "Internal.*"
+
+# Required service interfaces
+required_service_interfaces:
+  - "IService"
+  - "I*Service"
+
+# Domain patterns for auto-discovery
+domain_patterns:
+  - "Targeting"
+  - "Manipulation" 
+  - "Placement"
+  - "Grid"
+  - "Input"
+  - "Workflows"
+  - "Validation"
+  - "Events"
+
+# Service patterns for auto-discovery
+service_patterns:
+  - "*Service"
+  - "*Service"
+  - "*Adapter"
+  - "*Workflow"
+  - "*Orchestrator"
+
+# State patterns for auto-discovery
+state_patterns:
+  - "*State"
+  - "*Snapshot"
+  - "*Context"
+  - "*Data"
+
+# Event patterns for auto-discovery
+event_patterns:
+  - "*Event"
+  - "*EventArgs"
+
+# Assembly discovery patterns
+assembly_discovery:
+  include_patterns:
+    - "*.Core.dll"
+    - "GameComposition.*.dll"
+    - "GridPlacement.*.dll"
+  exclude_patterns:
+    - "*.Tests.dll"
+    - "*.Tools.dll"
+    - "Microsoft.*.dll"
+    - "System.*.dll"
+
+# Prohibited patterns (anti-patterns that should not exist)
+prohibited_patterns:
+  # Global event bus pattern - use IEventDispatcher injection instead
+  global_event_bus:
+    enabled: true
+    pattern: "*GlobalEventBus"
+    message: "GlobalEventBus pattern is prohibited. Use IEventDispatcher injection instead."
+    allowed_domain_specific:
+      - "PlacementEventBus"
+      - "GridEventBus" 
+      - "TargetingEventBus"
+      - "InputEventBus"
+  
+  # Dictionary<string, object> for domain data - use strong typing instead
+  weak_typing:
+    enabled: true
+    pattern: "Dictionary<string, object>"
+    message: "Dictionary<string, object> is prohibited for domain data. Use strongly typed classes instead."
+    allowed_contexts:
+      - "UI.*"
+      - "External.*"
+
+# Event architecture rules
+event_architecture:
+  # Required: Event interfaces must live in Core
+  interfaces_in_core:
+    enabled: true
+    core_namespaces:
+      - "*.Core.*"
+      - "BarkMoon.*.Core.*"
+  
+  # Required: Use IEventDispatcher injection
+  dispatcher_injection:
+    enabled: true
+    allowed_interfaces:
+      - "IEventDispatcher"
+      - "IEventBus"
+
+# Service-Based Architecture rules
+service_based_architecture:
+  # Required: Core/Godot separation
+  core_godot_separation:
+    enabled: true
+    core_patterns:
+      - "*.Core.*"
+      - "BarkMoon.*.Core.*"
+    godot_patterns:
+      - "*.Godot.*"
+      - "BarkMoon.*.Godot.*"
+      - "*Adapter.cs"
+  
+  # Required: Adapters bridge Engine ↔ Core
+  adapter_pattern:
+    enabled: true
+    adapter_patterns:
+      - "*Adapter"
+      - "Godot*Adapter"
+    bridge_direction: "EngineToCore"
+  
+  # Required: Services/Routers handle Core business logic
+  service_pattern:
+    enabled: true
+    service_patterns:
+      - "*Service"
+      - "*Router"
+      - "*Workflow"
+      - "*Orchestrator"
+    layer: "Core"
+
+# Test configuration
+test_configuration:
+  parallel_execution: true
+  fail_fast: false
+  max_violations_per_test: 10
+  
+# Reporting configuration
+reporting:
+  include_suggestions: true
+  group_by_domain: true
+  severity_levels:
+    - "Error"
+    - "Warning" 
+    - "Info"

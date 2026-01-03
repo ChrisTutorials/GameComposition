@@ -111,8 +111,8 @@ public abstract class ConditionBase<TContext> : ICondition<TContext>
     public string Id { get; protected set; } = string.Empty;
     public string Name { get; protected set; } = string.Empty;
     public string Description { get; protected set; } = string.Empty;
-    public int Priority { get; protected set; } = 0;
-    public bool IsInverted { get; protected set; } = false;
+    public int Priority { get; protected set; }
+    public bool IsInverted { get; protected set; }
     public ConditionOperator Operator { get; protected set; } = ConditionOperator.All;
     
     /// <summary>

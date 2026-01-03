@@ -11,9 +11,9 @@ namespace BarkMoon.GameComposition.Core.Types
     /// scenarios where string IDs would cause performance issues.
     /// 
     /// Usage examples:
-    /// - public readonly record struct ShopId(long Value) : NumericId&lt;ShopId&gt;;
-    /// - public readonly record struct OwnerId(long Value) : NumericId&lt;OwnerId&gt;;
-    /// - public readonly record struct RecipeId(long Value) : NumericId&lt;RecipeId&gt;;
+    /// - public readonly record struct ShopId(long Value) : NumericId<ShopId>;
+    /// - public readonly record struct OwnerId(long Value) : NumericId<OwnerId>;
+    /// - public readonly record struct RecipeId(long Value) : NumericId<RecipeId>;
     /// </summary>
     /// <remarks>
     /// Performance characteristics:
@@ -21,7 +21,11 @@ namespace BarkMoon.GameComposition.Core.Types
     /// - Comparison: ~5ns vs ~50ns for string comparison
     /// - Database: Native integer primary keys with optimal indexing
     /// - GC: Zero allocations for value types
+    /// 
+    /// Static factory methods are intentionally on the generic type for discoverability
+    /// and type safety, following established .NET patterns like Guid.NewGuid().
     /// </remarks>
+    #pragma warning disable CA1000 // Static members on generic types are intentional for factory patterns
     public readonly record struct NumericId<T>(long Value)
     {
         private static long _counter = 1;
@@ -63,7 +67,7 @@ namespace BarkMoon.GameComposition.Core.Types
         {
             if (string.IsNullOrEmpty(value))
                 return Empty;
-            return new NumericId<T>(long.Parse(value));
+            return new NumericId<T>(long.Parse(value, System.Globalization.CultureInfo.InvariantCulture));
         }
         
         /// <summary>
@@ -145,6 +149,7 @@ namespace BarkMoon.GameComposition.Core.Types
         /// Returns the string representation of this numeric ID.
         /// </summary>
         /// <returns>The numeric value as a string.</returns>
-        public override string ToString() => Value.ToString();
+        public override string ToString() => Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
     }
+    #pragma warning restore CA1000
 }

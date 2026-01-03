@@ -170,8 +170,10 @@ public class InventoryResult
     /// Adds a processed item to the result
     /// </summary>
     /// <param name="item">Item to add</param>
+    /// <exception cref="System.ArgumentNullException">Thrown when item is null</exception>
     public void AddProcessedItem(InventoryItem item)
     {
+        ArgumentNullException.ThrowIfNull(item);
         ProcessedItems.Add(item);
         ItemsProcessed += item.Quantity;
     }
@@ -189,8 +191,10 @@ public class InventoryResult
     /// Merges another result into this one
     /// </summary>
     /// <param name="other">Other result to merge</param>
+    /// <exception cref="System.ArgumentNullException">Thrown when other is null</exception>
     public void Merge(InventoryResult other)
     {
+        ArgumentNullException.ThrowIfNull(other);
         Success = Success && other.Success;
         ItemsProcessed += other.ItemsProcessed;
         RemainingCapacity = other.RemainingCapacity;

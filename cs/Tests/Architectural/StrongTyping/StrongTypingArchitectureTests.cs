@@ -3,6 +3,10 @@ using System.Reflection;
 using NetArchTest.Rules;
 using Shouldly;
 using Xunit;
+using BarkMoon.GameComposition.Tests.Common;
+
+// Explicitly alias the NetArchTest Types class to avoid conflict
+using ArchTypes = NetArchTest.Rules.Types;
 
 namespace BarkMoon.GameComposition.Tests.Architectural
 {
@@ -16,13 +20,10 @@ namespace BarkMoon.GameComposition.Tests.Architectural
         [Trait("Category", "Architectural")]
         public void Domain_Data_Contracts_Should_Use_Strong_Types_Not_Dictionary()
         {
-            // Arrange
-            var assemblies = new[]
-            {
-                typeof(BarkMoon.GridPlacement.Core.Placement.Data.PlacementEntry).Assembly,
-                typeof(BarkMoon.GridPlacement.Core.Targeting.Types.TargetingSnapshot2D).Assembly,
-                // Add other plugin assemblies as they're created
-            };
+            // Arrange - Use SSOT helper for assembly loading
+            var assemblies = ArchitecturalTestHelpers.GetAllAssemblies()
+                .Where(a => a.GetName().Name.Contains("GridPlacement"))
+                .ToArray();
 
             foreach (var assembly in assemblies)
             {

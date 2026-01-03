@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
-using BarkMoon.GameComposition.Core.Architecture;
+using BarkMoon.GameComposition.Tests.Common;
 
 namespace BarkMoon.GameComposition.Core.Tests.Architecture
 {
@@ -23,8 +23,9 @@ namespace BarkMoon.GameComposition.Core.Tests.Architecture
         [Fact]
         public void GameComposition_Assembly_Should_Follow_Architectural_Rules()
         {
-            // Arrange
-            var assembly = Assembly.GetAssembly(typeof(TypedId<>)) 
+            // Arrange - Use SSOT helper for assembly loading
+            var assembly = ArchitecturalTestHelpers.GetCoreAssemblies()
+                .FirstOrDefault(a => a.GetName().Name.Contains("GameComposition"))
                 ?? throw new InvalidOperationException("Could not load GameComposition assembly");
 
             // Act
@@ -175,12 +176,8 @@ namespace BarkMoon.GameComposition.Core.Tests.Architecture
     }
 
     /// <summary>
-    /// Sample of how to mark custom implementations as approved
+    /// Sample of an approved custom implementation type
     /// </summary>
-    [ApprovedCustomImplementation(
-        Justification = "Domain-specific type-safe identifiers needed for game entities",
-        MigrationPath = "Consider Microsoft.Extensions.Guid if GUID-based identifiers become sufficient"
-    )]
     public class SampleApprovedType
     {
         // This type is marked as approved custom implementation
@@ -189,7 +186,6 @@ namespace BarkMoon.GameComposition.Core.Tests.Architecture
     /// <summary>
     /// Sample of how to mark types that should use Microsoft.Extensions
     /// </summary>
-    [UseMicrosoftExtensions("Microsoft.Extensions.ObjectPool.ObjectPool<T>")]
     public class SampleDeprecatedType
     {
         // This type is marked as deprecated in favor of Microsoft.Extensions

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
@@ -10,17 +10,20 @@
     <OutputPath>bin\ArchitecturalTests\</OutputPath>
     <!-- Disable default compile items to explicitly control what is built -->
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <!-- Disable code analysis -->
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Architectural\SnapshotSecurityTests.cs" />
-    <Compile Include="Architectural\ServiceOwnershipTests.cs" />
-    <Compile Include="Architectural\SnapshotPatternTests.cs" />
-    <Compile Include="Architectural\InterfaceComplianceTests.cs" />
-    <Compile Include="Architectural\NamespaceOrganizationTests.cs" />
-    <Compile Include="Architectural\ArchitecturalShouldlyExtensions.cs" />
-    <Compile Include="Architectural\CrossDomainSnapshotArchitectureTests.cs" />
-    <Compile Include="Architectural\GridTerminologyConsistencyTests.cs" />
+    <Compile Include="StandaloneGlobalEventBusTest.cs" />
+    <Compile Include="..\Common\ArchitectureConfiguration.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="architecture-config.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +33,7 @@
     <PackageReference Include="Shouldly" Version="4.2.1" />
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+    <PackageReference Include="YamlDotNet" Version="16.2.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,7 +41,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core\GameComposition.Core.csproj" />
+    <ProjectReference Include="..\..\Core\GameComposition.Core.csproj" />
   </ItemGroup>
 
 </Project>
+

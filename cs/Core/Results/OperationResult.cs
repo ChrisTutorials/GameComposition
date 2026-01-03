@@ -41,6 +41,11 @@ namespace BarkMoon.GameComposition.Core.Results
     /// Represents the result of an operation with a generic return value.
     /// Implements IOperationResult{T} for cross-plugin compatibility.
     /// </summary>
+    /// <remarks>
+    /// Static factory methods are intentionally on the generic type for discoverability
+    /// and type safety, following established .NET patterns like Task.FromResult().
+    /// </remarks>
+    #pragma warning disable CA1000 // Static members on generic types are intentional for factory patterns
     public class OperationResult<T> : OperationResult, IOperationResult<T>
     {
         public T? Value { get; protected set; }
@@ -58,6 +63,7 @@ namespace BarkMoon.GameComposition.Core.Results
             };
         }
     }
+#pragma warning restore CA1000
 
     /// <summary>
     /// Represents validation results for framework and domains.

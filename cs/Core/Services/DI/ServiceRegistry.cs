@@ -19,14 +19,11 @@ public class ServiceRegistry : IDisposable
     private readonly Dictionary<Type, ServiceLifetime> _lifetimes = new();
     private readonly List<IDisposable> _disposables = new();
     private readonly List<IServiceHealthCheck> _healthChecks = new();
-    private bool _disposed = false;
+    private bool _disposed;
 
     private void ThrowIfDisposed()
     {
-        if (_disposed)
-        {
-            throw new ObjectDisposedException(nameof(ServiceRegistry));
-        }
+        ObjectDisposedException.ThrowIf(_disposed, nameof(ServiceRegistry));
     }
 
     /// <summary>
@@ -196,7 +193,7 @@ public class ServiceRegistry : IDisposable
         _lifetimes[serviceType] = ServiceLifetime.Scoped;
     }
 
-    private object CreateInstanceWithScope(Type type, IServiceScope scope)
+    private static object CreateInstanceWithScope(Type type, IServiceScope scope)
     {
         var ctors = type.GetConstructors();
         if (ctors.Length == 0) throw new InvalidOperationException($"No public constructors for {type.Name}");
@@ -312,7 +309,7 @@ public class ServiceRegistry : IDisposable
                 service = (T)factory();
                 return true;
             }
-            catch
+            catch (Exception ex) when (ex is InvalidOperationException or TypeAccessException)
             {
                 return false;
             }
@@ -325,7 +322,7 @@ public class ServiceRegistry : IDisposable
                 service = (T)scopedFactory(null!);
                 return true;
             }
-            catch
+            catch (Exception ex) when (ex is InvalidOperationException or TypeAccessException)
             {
                 return false;
             }
@@ -370,15 +367,14 @@ public class ServiceRegistry : IDisposable
         ThrowIfDisposed();
         return new Dictionary<Type, object>(_singletons);
     }
-
     /// <summary>
-    /// Validates that critical services are properly registered.
-    /// Call this after service configuration is complete.
+    /// Validates that required services are registered.
     /// </summary>
-    /// <param name="requiredServices">List of required service types</param>
-    /// <exception cref="InvalidOperationException">Thrown when required services are missing</exception>
+    /// <param name="requiredServices">Required service types</param>
+    /// <exception cref="System.ArgumentNullException">Thrown when requiredServices is null</exception>
     public void ValidateServices(params Type[] requiredServices)
     {
+        ArgumentNullException.ThrowIfNull(requiredServices);
         ThrowIfDisposed();
         var missingServices = new List<Type>();
 
@@ -430,7 +426,7 @@ public class ServiceRegistry : IDisposable
                     result.UnhealthyServices.Add(healthCheck.GetType().Name);
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is InvalidOperationException or System.Reflection.ReflectionTypeLoadException)
             {
                 result.ServiceResults.Add(healthCheck.GetType().Name, 
                     new ServiceHealthStatus { IsHealthy = false, Message = ex.Message });
@@ -438,7 +434,7 @@ public class ServiceRegistry : IDisposable
             }
         }
         
-        result.IsHealthy = !result.UnhealthyServices.Any();
+        result.IsHealthy = result.UnhealthyServices.Count == 0;
         return result;
     }
 
@@ -496,14 +492,17 @@ public class ServiceRegistry : IDisposable
     /// <summary>
     /// Disposes all disposable services and clears the registry.
     /// </summary>
-    public void Dispose()
+    protected virtual void Dispose(bool disposing)
     {
         if (_disposed)
         {
             return;
         }
 
-        DisposeAll();
+        if (disposing)
+        {
+            DisposeAll();
+        }
 
         _singletons.Clear();
         _factories.Clear();
@@ -514,6 +513,15 @@ public class ServiceRegistry : IDisposable
         _disposed = true;
     }
 
+    /// <summary>
+    /// Disposes all disposable services and clears the registry.
+    /// </summary>
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
     private void DisposeAll()
     {
         foreach (var disposable in _disposables)
@@ -522,7 +530,7 @@ public class ServiceRegistry : IDisposable
             {
                 disposable.Dispose();
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is ObjectDisposedException or InvalidOperationException)
             {
                 // Log disposal errors but don't throw
                 // In a real implementation, you'd use a logger here

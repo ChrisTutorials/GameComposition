@@ -9,13 +9,13 @@ namespace BarkMoon.GameComposition.Core.Types
     public struct Vector3 : IEquatable<Vector3>
     {
         /// <summary>Gets or sets the X coordinate component.</summary>
-        public float X;
+        public float X { get; set; }
         
         /// <summary>Gets or sets the Y coordinate component.</summary>
-        public float Y;
+        public float Y { get; set; }
         
         /// <summary>Gets or sets the Z coordinate component.</summary>
-        public float Z;
+        public float Z { get; set; }
 
         /// <summary>Vector representing the origin (0, 0, 0).</summary>
         public static readonly Vector3 Zero = new Vector3(0, 0, 0);

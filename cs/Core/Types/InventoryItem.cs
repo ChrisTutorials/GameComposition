@@ -196,8 +196,10 @@ public class InventoryItem
     /// </summary>
     /// <param name="other">Item to merge with</param>
     /// <returns>Merged item if successful, null if items cannot be merged</returns>
+    /// <exception cref="System.ArgumentNullException">Thrown when other is null</exception>
     public InventoryItem? Merge(InventoryItem other)
     {
+        ArgumentNullException.ThrowIfNull(other);
         if (Id != other.Id || Type != other.Type)
             return null;
         

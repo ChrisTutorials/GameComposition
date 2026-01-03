@@ -7,22 +7,26 @@ namespace BarkMoon.GameComposition.Core.Types;
 /// string-based storage for serialization and database compatibility.
 /// 
 /// Performance Considerations:
-/// - Use TypedId&lt;string&gt; for external APIs and GUID-based systems
-/// - Use NumericId&lt;long&gt; for internal database operations and performance-critical paths
+/// - Use `TypedId<string>` for external APIs and GUID-based systems
+/// - Use `NumericId<long>` for internal database operations and performance-critical paths
 /// - String IDs: ~36 bytes memory, slower comparisons, compatible with GUID systems
 /// - Numeric IDs: 8 bytes memory, 10x faster comparisons, optimal for database primary keys
 /// 
 /// Usage examples:
-/// - public readonly record struct ShopId(string Value) : TypedId&lt;ShopId&gt;;
-/// - public readonly record struct OwnerId(string Value) : TypedId&lt;OwnerId&gt;;
-/// - public readonly record struct RecipeId(string Value) : TypedId&lt;RecipeId&gt;;
+/// - public readonly record struct ShopId(string Value) : TypedId<ShopId>;
+/// - public readonly record struct OwnerId(string Value) : TypedId<OwnerId>;
+/// - public readonly record struct RecipeId(string Value) : TypedId<RecipeId>;
 /// </summary>
 /// <remarks>
 /// For high-performance scenarios (RimWorld/Stardew Valley scale):
-/// - Consider NumericId&lt;T&gt; for database primary keys
+/// - Consider `NumericId<T>` for database primary keys
 /// - Use IdConverter for seamless string ↔ numeric conversion
-/// - Keep TypedId&lt;string&gt; for external plugin APIs
+/// - Keep `TypedId<string>` for external plugin APIs
+/// 
+/// Static factory methods are intentionally on the generic type for discoverability
+/// and type safety, following established .NET patterns like Guid.NewGuid().
 /// </remarks>
+#pragma warning disable CA1000 // Static members on generic types are intentional for factory patterns
 public readonly record struct TypedId<T>(string Value)
 {
     /// <summary>
@@ -33,74 +37,87 @@ public readonly record struct TypedId<T>(string Value)
     /// <summary>
     /// The string value of this typed ID.
     /// </summary>
-    public string Value { get; } = Value ?? string.Empty;
+    public string Value { get; } = Value;
     
     /// <summary>
-    /// Implicit conversion from TypedId to string
-    /// </summary>
-    /// <param name="id">The TypedId to convert</param>
-    public static implicit operator string(TypedId<T> id) => id.Value;
-    
-    /// <summary>
-    /// Implicit conversion from string to TypedId
-    /// </summary>
-    /// <param name="value">String value to convert</param>
-    public static implicit operator TypedId<T>(string value) => new(value);
-    
-    /// <summary>
-    /// Determines if this ID is empty.
+    /// Determines if this ID is empty (null or empty string).
     /// </summary>
     public bool IsEmpty => string.IsNullOrEmpty(Value);
     
     /// <summary>
-    /// Determines if this ID has a value.
+    /// Determines if this ID has a value (non-empty string).
     /// </summary>
-    public bool HasValue => !string.IsNullOrEmpty(Value);
+    public bool HasValue => !IsEmpty;
     
     /// <summary>
-    /// Creates a new typed ID with a generated GUID.
+    /// Creates a new typed ID from a GUID string.
     /// </summary>
     /// <returns>A new typed ID with a GUID value.</returns>
-    public static TypedId<T> New() => new(System.Guid.NewGuid().ToString());
+    public static TypedId<T> New() => new(Guid.NewGuid().ToString("N"));
+    
+    /// <summary>
+    /// Creates a new typed ID from a string value.
+    /// </summary>
+    /// <param name="value">The string value for the ID.</param>
+    /// <returns>A new typed ID.</returns>
+    public static TypedId<T> From(string value) => new(value ?? string.Empty);
     
     /// <summary>
     /// Parses a string into a typed ID.
     /// </summary>
     /// <param name="value">The string value to parse.</param>
     /// <returns>A typed ID instance.</returns>
-    public static TypedId<T> Parse(string value) => new(value);
+    /// <exception cref="ArgumentNullException">Thrown when value is null.</exception>
+    public static TypedId<T> Parse(string value)
+    {
+        ArgumentNullException.ThrowIfNull(value);
+        return new TypedId<T>(value);
+    }
     
     /// <summary>
     /// Attempts to parse a string into a typed ID.
     /// </summary>
     /// <param name="value">The string value to parse.</param>
     /// <param name="result">When this method returns, contains the parsed typed ID if successful.</param>
-    /// <returns>True if parsing succeeded; always true since any string is valid.</returns>
+    /// <returns>True if parsing succeeded; otherwise false.</returns>
     public static bool TryParse(string value, out TypedId<T> result)
     {
-        result = new TypedId<T>(value);
-        return true; // Always succeeds since any string is valid
+        result = value != null ? new TypedId<T>(value) : Empty;
+        return value != null;
     }
+    
+    /// <summary>
+    /// Implicit conversion from string to TypedId.
+    /// </summary>
+    /// <param name="value">The string value.</param>
+    public static implicit operator TypedId<T>(string value) => new(value ?? string.Empty);
+    
+    /// <summary>
+    /// Implicit conversion from TypedId to string.
+    /// </summary>
+    /// <param name="id">The typed ID.</param>
+    public static implicit operator string(TypedId<T> id) => id.Value;
     
     /// <summary>
     /// Compares this typed ID with another for equality.
     /// </summary>
     /// <param name="other">The other typed ID to compare with.</param>
     /// <returns>True if the IDs have the same value; otherwise false.</returns>
-    public bool Equals(TypedId<T> other) => Value == other.Value;
+    public bool Equals(TypedId<T> other) => string.Equals(Value, other.Value, StringComparison.Ordinal);
     
     /// <summary>
     /// Returns the hash code for this typed ID.
     /// </summary>
     /// <returns>A hash code based on the string value.</returns>
-    public override int GetHashCode() => Value?.GetHashCode() ?? 0;
+    public override int GetHashCode() => Value?.GetHashCode(StringComparison.Ordinal) ?? 0;
     
     /// <summary>
     /// Returns the string representation of this typed ID.
     /// </summary>
-    /// <returns>The string value, or empty string if null.</returns>
+    /// <returns>The string value.</returns>
     public override string ToString() => Value ?? string.Empty;
 }
+#pragma warning restore CA1000
 
 /// <summary>
 /// Extension methods for TypedId

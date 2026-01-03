@@ -11,12 +11,12 @@ namespace BarkMoon.GameComposition.Core.Types
         /// <summary>
         /// Gets or sets the X coordinate (horizontal position).
         /// </summary>
-        public int X;
+        public int X { get; set; }
         
         /// <summary>
         /// Gets or sets the Y coordinate (vertical position).
         /// </summary>
-        public int Y;
+        public int Y { get; set; }
 
         /// <summary>
         /// Represents a zero vector (0, 0).

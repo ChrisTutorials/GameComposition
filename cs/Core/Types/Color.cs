@@ -8,10 +8,10 @@ namespace BarkMoon.GameComposition.Core.Types
     /// </summary>
     public struct Color : IEquatable<Color>
     {
-        public float R;
-        public float G;
-        public float B;
-        public float A;
+        public float R { get; set; }
+        public float G { get; set; }
+        public float B { get; set; }
+        public float A { get; set; }
 
         public static readonly Color Black = new Color(0, 0, 0, 1);
         public static readonly Color White = new Color(1, 1, 1, 1);

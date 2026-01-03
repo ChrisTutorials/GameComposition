@@ -39,7 +39,7 @@ namespace BarkMoon.GameComposition.Core.Utils
         /// </summary>
         public static string GetDateTimeString(string format = "yyyy-MM-dd HH:mm:ss")
         {
-            return DateTime.Now.ToString(format);
+            return DateTime.Now.ToString(format, System.Globalization.CultureInfo.InvariantCulture);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace BarkMoon.GameComposition.Core.Utils
         /// </summary>
         public static string GetDateTimeStringUtc(string format = "yyyy-MM-dd HH:mm:ss")
         {
-            return DateTime.UtcNow.ToString(format);
+            return DateTime.UtcNow.ToString(format, System.Globalization.CultureInfo.InvariantCulture);
         }
 
         /// <summary>

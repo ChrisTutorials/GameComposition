@@ -22,20 +22,20 @@ namespace BarkMoon.GameComposition.Core.Types
         /// Converts a GUID string to a numeric ID using deterministic hashing.
         /// </summary>
         /// <typeparam name="T">The type parameter for the numeric ID.</typeparam>
-        /// <param name="guid">The GUID string to convert.</param>
+        /// <param name="guidString">The GUID string to convert.</param>
         /// <returns>A numeric ID representing the GUID.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when guid is null.</exception>
-        /// <exception cref="FormatException">Thrown when guid is not a valid GUID format.</exception>
-        public static NumericId<T> GuidToNumeric<T>(string guid)
+        /// <exception cref="ArgumentNullException">Thrown when guidString is null.</exception>
+        /// <exception cref="FormatException">Thrown when guidString is not a valid GUID format.</exception>
+        public static NumericId<T> GuidToNumeric<T>(string guidString)
         {
-            if (guid == null) throw new ArgumentNullException(nameof(guid));
+            ArgumentNullException.ThrowIfNull(guidString);
             
             // Validate GUID format
-            if (!Guid.TryParse(guid, out _))
-                throw new FormatException($"Invalid GUID format: {guid}");
+            if (!Guid.TryParse(guidString, out _))
+                throw new FormatException($"Invalid GUID format: {guidString}");
             
             // Use deterministic hash to convert GUID to 64-bit number
-            var hash = SHA256.HashData(Encoding.UTF8.GetBytes(guid));
+            var hash = SHA256.HashData(Encoding.UTF8.GetBytes(guidString));
             var bytes = new byte[8];
             Array.Copy(hash, 0, bytes, 0, 8);
             
@@ -68,14 +68,14 @@ namespace BarkMoon.GameComposition.Core.Types
         /// Attempts to convert a GUID string to a numeric ID.
         /// </summary>
         /// <typeparam name="T">The type parameter for the numeric ID.</typeparam>
-        /// <param name="guid">The GUID string to convert.</param>
+        /// <param name="guidString">The GUID string to convert.</param>
         /// <param name="result">When this method returns, contains the converted numeric ID if successful.</param>
         /// <returns>True if conversion succeeded; otherwise false.</returns>
-        public static bool TryGuidToNumeric<T>(string guid, out NumericId<T> result)
+        public static bool TryGuidToNumeric<T>(string guidString, out NumericId<T> result)
         {
             result = default;
             
-            if (string.IsNullOrEmpty(guid))
+            if (string.IsNullOrEmpty(guidString))
             {
                 result = NumericId<T>.Empty;
                 return true;
@@ -83,10 +83,14 @@ namespace BarkMoon.GameComposition.Core.Types
             
             try
             {
-                result = GuidToNumeric<T>(guid);
+                result = GuidToNumeric<T>(guidString);
                 return true;
             }
-            catch
+            catch (FormatException)
+            {
+                return false;
+            }
+            catch (ArgumentNullException)
             {
                 return false;
             }

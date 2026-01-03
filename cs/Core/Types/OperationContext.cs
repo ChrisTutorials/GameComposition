@@ -46,7 +46,7 @@ public abstract class OperationContext
     /// <summary>
     /// Whether this operation is critical or has special importance
     /// </summary>
-    public bool IsCritical { get; set; } = false;
+    public bool IsCritical { get; set; }
     
     /// <summary>
     /// Unique identifier for this operation instance

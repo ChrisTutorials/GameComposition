@@ -1,11 +1,22 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <!-- Isolate build artifacts to avoid conflicts with other projects in the same folder -->
+    <BaseIntermediateOutputPath>obj\CoreTests\</BaseIntermediateOutputPath>
+    <OutputPath>bin\CoreTests\</OutputPath>
+    <!-- Disable default compile items to explicitly control what is built -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
+
+  <!-- Include all test files and common helpers -->
+  <ItemGroup>
+    <Compile Include="**/*.cs" />
+    <Compile Include="..\Common\*.cs" />
+  </ItemGroup>
 
   <!-- Exclude broken tests pending interface migration -->
   <ItemGroup>
@@ -47,7 +58,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GameComposition.Core.csproj" />
+    <ProjectReference Include="..\..\Core\GameComposition.Core.csproj" />
   </ItemGroup>
 
 </Project>

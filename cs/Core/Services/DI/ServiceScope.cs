@@ -30,12 +30,11 @@ public class ServiceScope(ServiceRegistry registry) : IServiceScope
     /// </summary>
     /// <param name="serviceType">The service type.</param>
     /// <returns>The scoped service instance.</returns>
+    /// <exception cref="System.ArgumentNullException">Thrown when serviceType is null</exception>
     public object GetService(Type serviceType)
     {
-        if (_disposed)
-        {
-            throw new ObjectDisposedException(nameof(ServiceScope));
-        }
+        ArgumentNullException.ThrowIfNull(serviceType);
+        ObjectDisposedException.ThrowIf(_disposed, nameof(ServiceScope));
 
         if (_scopedServices.TryGetValue(serviceType, out var existing))
         {
@@ -58,27 +57,44 @@ public class ServiceScope(ServiceRegistry registry) : IServiceScope
     /// <summary>
     /// Disposes any scoped <see cref="IDisposable"/> services created by this scope.
     /// </summary>
-    public void Dispose()
+    protected virtual void Dispose(bool disposing)
     {
         if (_disposed)
         {
             return;
         }
 
-        foreach (var disposable in _scopedDisposables)
+        if (disposing)
         {
-            try
+            foreach (var disposable in _scopedDisposables)
             {
-                disposable.Dispose();
+                try
+                {
+                    disposable.Dispose();
+                }
+                catch (ObjectDisposedException)
+                {
+                    // Swallow disposal errors; logging is handled elsewhere.
+                }
+                catch (InvalidOperationException)
+                {
+                    // Swallow disposal errors; logging is handled elsewhere.
+                }
             }
-            catch
-            {
-                // Swallow disposal errors; logging is handled elsewhere.
-            }
+
+            _scopedDisposables.Clear();
+            _scopedServices.Clear();
         }
 
-        _scopedDisposables.Clear();
-        _scopedServices.Clear();
         _disposed = true;
+    }
+
+    /// <summary>
+    /// Disposes any scoped <see cref="IDisposable"/> services created by this scope.
+    /// </summary>
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 }

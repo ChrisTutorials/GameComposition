@@ -78,8 +78,8 @@ namespace BarkMoon.GameComposition.Core.Types
         /// </summary>
         /// <typeparam name="T">The template type</typeparam>
         /// <param name="templateId">The template ID</param>
-        /// <param name="template">The template instance</param>
-        void RegisterTemplate<T>(string templateId, T template) where T : class;
+        /// <param name="templateInstance">The template instance</param>
+        void RegisterTemplate<T>(string templateId, T templateInstance) where T : class;
 
         /// <summary>
         /// Checks if a template is registered

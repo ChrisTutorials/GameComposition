@@ -23,7 +23,7 @@ namespace BarkMoon.GameComposition.Core.Configuration
         public static TTarget ConvertTo<TTarget>(IConfiguration source) where TTarget : class, IConfiguration
         {
             if (source == null)
-                throw new ArgumentNullException(nameof(source));
+                ArgumentNullException.ThrowIfNull(source);
 
             var target = Activator.CreateInstance<TTarget>();
             
@@ -42,7 +42,7 @@ namespace BarkMoon.GameComposition.Core.Configuration
         public static T Copy<T>(T config) where T : class, IConfiguration
         {
             if (config == null)
-                throw new ArgumentNullException(nameof(config));
+                ArgumentNullException.ThrowIfNull(config);
 
             return ConvertTo<T>(config);
         }
@@ -55,7 +55,7 @@ namespace BarkMoon.GameComposition.Core.Configuration
         public static ConfigurationValidationResult Validate(IConfiguration config)
         {
             if (config == null)
-                throw new ArgumentNullException(nameof(config));
+                ArgumentNullException.ThrowIfNull(config);
 
             var errors = config.Validate();
             var isValid = config.IsValid();
@@ -124,7 +124,7 @@ namespace BarkMoon.GameComposition.Core.Configuration
         public static IEnumerable<TTarget> ConvertBatch<TTarget>(IEnumerable<IConfiguration> sources) where TTarget : class, IConfiguration
         {
             if (sources == null)
-                throw new ArgumentNullException(nameof(sources));
+                ArgumentNullException.ThrowIfNull(sources);
 
             foreach (var source in sources)
             {

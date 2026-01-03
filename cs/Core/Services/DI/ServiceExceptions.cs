@@ -11,9 +11,11 @@ public class ServiceNotRegisteredException : Exception
     /// Creates an exception indicating that <paramref name="serviceType"/> is not registered.
     /// </summary>
     /// <param name="serviceType">The missing service type.</param>
+    /// <exception cref="System.ArgumentNullException">Thrown when serviceType is null</exception>
     public ServiceNotRegisteredException(Type serviceType) 
-        : base($"Service '{serviceType.Name}' is not registered. Check service configuration in the composition container.")
+        : base($"Service '{serviceType?.Name ?? "null"}' is not registered. Check service configuration in the composition container.")
     {
+        ArgumentNullException.ThrowIfNull(serviceType);
         ServiceType = serviceType;
     }
 
@@ -22,9 +24,11 @@ public class ServiceNotRegisteredException : Exception
     /// </summary>
     /// <param name="serviceType">The missing service type.</param>
     /// <param name="message">The exception message.</param>
+    /// <exception cref="System.ArgumentNullException">Thrown when serviceType is null</exception>
     public ServiceNotRegisteredException(Type serviceType, string message) 
         : base(message)
     {
+        ArgumentNullException.ThrowIfNull(serviceType);
         ServiceType = serviceType;
     }
 
@@ -34,9 +38,11 @@ public class ServiceNotRegisteredException : Exception
     /// <param name="serviceType">The missing service type.</param>
     /// <param name="message">The exception message.</param>
     /// <param name="innerException">The inner exception.</param>
+    /// <exception cref="System.ArgumentNullException">Thrown when serviceType is null</exception>
     public ServiceNotRegisteredException(Type serviceType, string message, Exception innerException) 
         : base(message, innerException)
     {
+        ArgumentNullException.ThrowIfNull(serviceType);
         ServiceType = serviceType;
     }
 

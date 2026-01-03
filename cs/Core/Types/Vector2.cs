@@ -14,9 +14,9 @@ namespace BarkMoon.GameComposition.Core.Types
     public struct Vector2 : IEquatable<Vector2>
     {
         /// <summary>The X coordinate component.</summary>
-        public float X;
+        public float X { get; set; }
         /// <summary>The Y coordinate component.</summary>
-        public float Y;
+        public float Y { get; set; }
 
         /// <summary>Vector representing the origin (0, 0).</summary>
         public static readonly Vector2 Zero = new(0, 0);

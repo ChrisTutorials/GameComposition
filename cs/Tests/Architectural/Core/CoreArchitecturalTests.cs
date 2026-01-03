@@ -5,6 +5,10 @@ using System.Reflection;
 using NetArchTest.Rules;
 using Shouldly;
 using Xunit;
+using BarkMoon.GameComposition.Tests.Common;
+
+// Explicitly alias the NetArchTest Types class to avoid conflict
+using ArchTypes = NetArchTest.Rules.Types;
 
 namespace BarkMoon.GameComposition.ArchitecturalTests.Core
 {
@@ -14,7 +18,8 @@ namespace BarkMoon.GameComposition.ArchitecturalTests.Core
     /// </summary>
     public class CoreArchitecturalTests
     {
-        private readonly Assembly _gameCompositionAssembly = Assembly.LoadFrom("BarkMoon.GameComposition.Core.dll");
+        private readonly Assembly _gameCompositionAssembly = ArchitecturalTestHelpers.GetCoreAssemblies()
+            .First(a => a.GetName().Name.Contains("GameComposition"));
 
         [Fact(DisplayName = "001GC: Core Should Use Microsoft Extensions Not Custom Implementations")]
         public void Core_Should_Use_Microsoft_Extensions_Not_Custom_Implementations()

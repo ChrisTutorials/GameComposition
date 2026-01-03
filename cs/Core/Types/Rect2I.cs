@@ -9,25 +9,53 @@ namespace BarkMoon.GameComposition.Core.Types
     public struct Rect2I : IEquatable<Rect2I>
     {
         /// <summary>Gets or sets the position (top-left corner) of the rectangle.</summary>
-        public Vector2I Position;
+        public Vector2I Position { get; set; }
         
         /// <summary>Gets or sets the size (width and height) of the rectangle.</summary>
-        public Vector2I Size;
+        public Vector2I Size { get; set; }
 
         /// <summary>Represents a zero-sized rectangle at the origin.</summary>
         public static readonly Rect2I Zero = new(Vector2I.Zero, Vector2I.Zero);
 
         /// <summary>Gets or sets the X coordinate of the rectangle's position.</summary>
-        public int X { get => Position.X; set => Position.X = value; }
+        public int X 
+        { 
+            get => Position.X; 
+            set 
+            {
+                Position = new Vector2I(value, Position.Y);
+            }
+        }
         
         /// <summary>Gets or sets the Y coordinate of the rectangle's position.</summary>
-        public int Y { get => Position.Y; set => Position.Y = value; }
+        public int Y 
+        { 
+            get => Position.Y; 
+            set 
+            {
+                Position = new Vector2I(Position.X, value);
+            }
+        }
         
         /// <summary>Gets or sets the width of the rectangle.</summary>
-        public int Width { get => Size.X; set => Size.X = value; }
+        public int Width 
+        { 
+            get => Size.X; 
+            set 
+            {
+                Size = new Vector2I(value, Size.Y);
+            }
+        }
         
         /// <summary>Gets or sets the height of the rectangle.</summary>
-        public int Height { get => Size.Y; set => Size.Y = value; }
+        public int Height 
+        { 
+            get => Size.Y; 
+            set 
+            {
+                Size = new Vector2I(Size.X, value);
+            }
+        }
 
         /// <summary>Gets the X coordinate of the rectangle's right edge.</summary>
         public int EndX => Position.X + Size.X;
