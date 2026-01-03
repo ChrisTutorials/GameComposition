@@ -14,7 +14,7 @@ namespace BarkMoon.GameComposition.Core.Utils
         /// <param name="value">The value to constrain.</param>
         /// <param name="min">The minimum allowed value (inclusive).</param>
         /// <param name="max">The maximum allowed value (inclusive).</param>
-        /// <returns>The constrained value: min if value < min, max if value > max, otherwise value.</returns>
+        /// <returns>The constrained value: `min` if `value < min`, `max` if `value > max`, otherwise `value`.</returns>
         /// <remarks>
         /// This is a fundamental utility for value normalization across the framework.
         /// Used for UI element bounds, animation parameters, and data validation.
@@ -28,7 +28,7 @@ namespace BarkMoon.GameComposition.Core.Utils
         /// <param name="value">The value to constrain.</param>
         /// <param name="min">The minimum allowed value (inclusive).</param>
         /// <param name="max">The maximum allowed value (inclusive).</param>
-        /// <returns>The constrained value: min if value < min, max if value > max, otherwise value.</returns>
+        /// <returns>The constrained value: `min` if `value < min`, `max` if `value > max`, otherwise `value`.</returns>
         /// <remarks>
         /// This is a fundamental utility for floating-point normalization across the framework.
         /// Used for alpha values, color components, physics calculations, and interpolation weights.
@@ -42,7 +42,7 @@ namespace BarkMoon.GameComposition.Core.Utils
         /// <param name="value">The value to constrain.</param>
         /// <param name="min">The minimum allowed value (inclusive).</param>
         /// <param name="max">The maximum allowed value (inclusive).</param>
-        /// <returns>The constrained value: min if value < min, max if value > max, otherwise value.</returns>
+        /// <returns>The constrained value: `min` if `value < min`, `max` if `value > max`, otherwise `value`.</returns>
         /// <remarks>
         /// This is a fundamental utility for high-precision value normalization across the framework.
         /// Used for scientific calculations, precise timing, and financial computations.

@@ -15,7 +15,7 @@ namespace BarkMoon.GameComposition.Core.Services
         /// Gets an object from the pool or creates a new one if none are available.
         /// </summary>
         /// <returns>A pooled or newly created object</returns>
-        T Get();
+        T Acquire();
 
         /// <summary>
         /// Returns an object to the pool for reuse.
@@ -41,7 +41,7 @@ namespace BarkMoon.GameComposition.Core.Services
         /// <summary>
         /// Gets an object from the pool or creates a new one if none are available.
         /// </summary>
-        public T Get() => _pool.Get();
+        public T Acquire() => _pool.Get();
 
         /// <summary>
         /// Returns an object to the pool for reuse.
@@ -136,16 +136,16 @@ namespace BarkMoon.GameComposition.Core.Services
         public static IServiceCollection AddObjectPooling(this IServiceCollection services)
         {
             // Register common pool factories
-            services.AddSingleton(typeof(IObjectPoolFactory<>), typeof(ObjectPoolFactory<>));
+            services.AddSingleton<IObjectPoolFactory<object>, ObjectPoolFactory<object>>();
             
             // Register List pools
-            services.AddSingleton(typeof(IObjectPoolFactory<List<string>>));
-            services.AddSingleton(typeof(IObjectPoolFactory<List<int>>));
-            services.AddSingleton(typeof(IObjectPoolFactory<List<object>>));
+            services.AddSingleton<IObjectPoolFactory<List<string>>, ObjectPoolFactory<List<string>>>();
+            services.AddSingleton<IObjectPoolFactory<List<int>>, ObjectPoolFactory<List<int>>>();
+            services.AddSingleton<IObjectPoolFactory<List<object>>, ObjectPoolFactory<List<object>>>();
             
             // Register Dictionary pools
-            services.AddSingleton(typeof(IObjectPoolFactory<Dictionary<string, object>>));
-            services.AddSingleton(typeof(IObjectPoolFactory<Dictionary<string, string>>));
+            services.AddSingleton<IObjectPoolFactory<Dictionary<string, object>>, ObjectPoolFactory<Dictionary<string, object>>>();
+            services.AddSingleton<IObjectPoolFactory<Dictionary<string, string>>, ObjectPoolFactory<Dictionary<string, string>>>();
             
             // Register CommonObjectPools
             services.AddSingleton<CommonObjectPools>();

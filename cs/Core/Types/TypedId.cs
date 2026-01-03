@@ -13,9 +13,9 @@ namespace BarkMoon.GameComposition.Core.Types;
 /// - Numeric IDs: 8 bytes memory, 10x faster comparisons, optimal for database primary keys
 /// 
 /// Usage examples:
-/// - public readonly record struct ShopId(string Value) : TypedId<ShopId>;
-/// - public readonly record struct OwnerId(string Value) : TypedId<OwnerId>;
-/// - public readonly record struct RecipeId(string Value) : TypedId<RecipeId>;
+/// - `public readonly record struct ShopId(string Value) : TypedId<ShopId>;`
+/// - `public readonly record struct OwnerId(string Value) : TypedId<OwnerId>;`
+/// - `public readonly record struct RecipeId(string Value) : TypedId<RecipeId>;`
 /// </summary>
 /// <remarks>
 /// For high-performance scenarios (RimWorld/Stardew Valley scale):

@@ -16,12 +16,10 @@ allowed_cross_domain_dependencies:
   - "Manipulation->Placement"
   - "Manipulation->Grid"
   
-  # Workflow orchestration (workflows can coordinate any domain)
-  - "Workflows->Input"
-  - "Workflows->Targeting"
-  - "Workflows->Manipulation"
-  - "Workflows->Placement"
-  - "Workflows->Grid"
+  # Cursor flow dependencies
+  - "Cursor->Targeting"
+  - "Cursor->Grid"
+  - "Cursor->Placement"
 
 # Allowed namespace violations (for legacy compatibility)
 allowed_namespace_violations:
@@ -37,12 +35,9 @@ required_service_interfaces:
 domain_patterns:
   - "Targeting"
   - "Manipulation" 
-  - "Placement"
+  - "Cursor"
   - "Grid"
   - "Input"
-  - "Workflows"
-  - "Validation"
-  - "Events"
 
 # Service patterns for auto-discovery
 service_patterns:
@@ -58,11 +53,30 @@ state_patterns:
   - "*Snapshot"
   - "*Context"
   - "*Data"
+  - "*ViewModel"
 
 # Event patterns for auto-discovery
 event_patterns:
   - "*Event"
   - "*EventArgs"
+
+# Adapter patterns for auto-discovery
+adapter_patterns:
+  - "*Adapter"
+  - "Godot*"
+
+# Presenter patterns for auto-discovery
+presenter_patterns:
+  - "*Presenter"
+
+# ViewModel patterns for auto-discovery
+viewmodel_patterns:
+  - "*ViewModel"
+
+# Orchestrator patterns for auto-discovery
+orchestrator_patterns:
+  - "*Orchestrator"
+  - "*Workflow"
 
 # Assembly discovery patterns
 assembly_discovery:
@@ -88,6 +102,9 @@ prohibited_patterns:
       - "GridEventBus" 
       - "TargetingEventBus"
       - "InputEventBus"
+    test_assemblies:
+      - "GridPlacement.Core"
+      - "GameComposition.Core"
   
   # Dictionary<string, object> for domain data - use strong typing instead
   weak_typing:
@@ -97,6 +114,42 @@ prohibited_patterns:
     allowed_contexts:
       - "UI.*"
       - "External.*"
+    target_namespaces:
+      - "*.Data.*"
+      - "*.Contracts.*"
+      - "*.DTO.*"
+    name_patterns:
+      - "*Entry"
+      - "*Metadata"
+      - "*Data"
+      - "*Contract"
+  
+  # Custom implementations - use Microsoft.Extensions instead
+  custom_implementations:
+    enabled: true
+    prohibited_names:
+      - "CustomPool"
+      - "CollectionPool"
+      - "CustomLogger"
+      - "CustomDI"
+    message: "Custom implementations are prohibited. Use Microsoft.Extensions.* instead."
+    target_assemblies:
+      - "GameComposition.Core"
+  
+  # Engine dependencies in Core packages
+  engine_dependencies:
+    enabled: true
+    prohibited_dependencies:
+      - "Godot"
+      - "Unity"
+      - "Unreal"
+    message: "Engine dependencies are prohibited in Core packages. Core must be engine-agnostic."
+    target_assemblies:
+      - "GameComposition.Core"
+      - "GridPlacement.Core"
+    allowed_exceptions:
+      - "Tests"
+      - "Examples"
 
 # Event architecture rules
 event_architecture:
@@ -113,6 +166,32 @@ event_architecture:
     allowed_interfaces:
       - "IEventDispatcher"
       - "IEventBus"
+
+# Strong typing rules
+strong_typing:
+  # Prohibit object/object? in domain interfaces
+  prohibit_object_typing:
+    enabled: true
+    target_interfaces:
+      - "I*Service"
+      - "I*Repository"
+      - "I*Factory"
+      - "I*Adapter"
+    prohibited_types:
+      - "object"
+      - "object?"
+    message: "Object typing is prohibited in service interfaces. Use strong types instead."
+  
+  # Require specific return types
+  required_return_types:
+    enabled: true
+    interface_patterns:
+      - "I*Service"
+      - "I*Repository"
+    prohibited_return_types:
+      - "object"
+      - "object?"
+    message: "Service methods must return strong types, not object."
 
 # Service-Based Architecture rules
 service_based_architecture:

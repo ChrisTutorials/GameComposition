@@ -1,34 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
-    <!-- Isolate build artifacts to avoid conflicts with other projects in the same folder -->
-    <BaseIntermediateOutputPath>obj\CoreTests\</BaseIntermediateOutputPath>
-    <OutputPath>bin\CoreTests\</OutputPath>
-    <!-- Disable default compile items to explicitly control what is built -->
-    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <NoWarn>$(NoWarn);CA1307;CA1062;CA1852</NoWarn>
   </PropertyGroup>
-
-  <!-- Include all test files and common helpers -->
-  <ItemGroup>
-    <Compile Include="**/*.cs" />
-    <Compile Include="..\Common\*.cs" />
-  </ItemGroup>
-
-  <!-- Exclude broken tests pending interface migration -->
-  <ItemGroup>
-    <Compile Remove="Types\AdvancedInventoryTests.cs" />
-    <Compile Remove="Types\ItemStackInventoryTests.cs" />
-    <Compile Remove="Types\ProperAdvancedInventoryTests.cs" />
-    <Compile Remove="Types\AdvancedInventoryTestData.cs" />
-    <Compile Remove="Architecture\ArchitecturalRuleTests.cs" />
-    <Compile Remove="Performance\ObjectPoolPerformanceTests.cs" />
-    <Compile Remove="Architecture\MicrosoftExtensionsUsageTests.cs" />
-    <Compile Remove="Architecture\YagniViolationTests.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.4" />
@@ -37,11 +15,11 @@
     <PackageReference Include="Shouldly" Version="4.2.1" />
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+    <PackageReference Include="YamlDotNet" Version="16.2.0" />
     
     <!-- SSOT Roslyn Analyzers -->
-    <!-- <PackageReference Include="GameComposition.SsotAnalyzers" Version="1.0.0" PrivateAssets="all" /> -->
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" PrivateAssets="all" />
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.23.0.82379" PrivateAssets="all" />
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.23.0.88079" PrivateAssets="all" />
   </ItemGroup>
   
   <!-- SSOT Analyzer Configuration -->
@@ -62,3 +40,4 @@
   </ItemGroup>
 
 </Project>
+

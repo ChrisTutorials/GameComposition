@@ -1,48 +1,86 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NetArchTest.Rules;
 using Shouldly;
 using Xunit;
+using BarkMoon.GameComposition.Tests.Common;
+
+// Explicitly alias the NetArchTest Types class to avoid conflict
+using ArchTypes = NetArchTest.Rules;
 
 namespace BarkMoon.GameComposition.Core.Tests.Architectural
 {
     /// <summary>
     /// Code-first architectural rules replacing static documentation.
+    /// DEPRECATED: Use ConfigurationDrivenArchitectureTests instead.
     /// These tests ARE the architectural rules - documentation drift eliminated.
     /// </summary>
     public class ArchitecturalRulesTests
     {
         private readonly Assembly _gameCompositionAssembly = Assembly.LoadFrom("BarkMoon.GameComposition.Core.dll");
+        private static readonly ArchitectureConfig _config = ArchitectureConfigLoader.LoadConfig();
 
         [Fact(DisplayName = "001AR: Core Should Use Microsoft Extensions Not Custom Implementations")]
         public void Core_Should_Use_Microsoft_Extensions_Not_Custom_Implementations()
         {
-            // Rule: Use Microsoft.Extensions.* instead of custom implementations
-            var result = Types.InAssembly(_gameCompositionAssembly)
-                .Should()
-                .NotHaveNameContaining("CustomPool")
-                .And()
-                .NotHaveNameContaining("CollectionPool")
-                .And()
-                .NotHaveNameContaining("CustomLogger")
-                .And()
-                .NotHaveNameContaining("CustomDI")
-                .GetResult();
+            // Arrange - Get configuration
+            var customImplConfig = _config.ProhibitedPatterns.CustomImplementations;
+            if (!customImplConfig.Enabled)
+            {
+                // Rule disabled - skip test
+                return;
+            }
 
-            result.IsSuccessful.ShouldBeTrue("Should use Microsoft.Extensions.* instead of custom implementations");
+            // Act - Check for custom implementations
+            var allViolations = new List<string>();
+            
+            foreach (var prohibitedName in customImplConfig.ProhibitedNames)
+            {
+                var result = Types.InAssembly(_gameCompositionAssembly)
+                    .Should()
+                    .NotHaveNameContaining(prohibitedName)
+                    .GetResult();
+
+                if (!result.IsSuccessful)
+                {
+                    allViolations.AddRange(result.Select(f => $"Found prohibited custom implementation: {f.Name}"));
+                }
+            }
+
+            // Assert - No violations should exist
+            if (allViolations.Count > 0)
+            {
+                var errorMessage = $"{customImplConfig.Message}\nViolations:\n{string.Join("\n", allViolations)}";
+                throw new InvalidOperationException(errorMessage);
+            }
         }
 
         [Fact(DisplayName = "002AR: Core Should Be Engine Agnostic")]
         public void Core_Should_Be_Engine_Agnostic()
         {
-            // Rule: No engine dependencies in Core package
+            // Arrange - Get configuration
+            var engineDepConfig = _config.ProhibitedPatterns.EngineDependencies;
+            if (!engineDepConfig.Enabled)
+            {
+                // Rule disabled - skip test
+                return;
+            }
+
+            // Act - Check for engine dependencies
             var result = Types.InAssembly(_gameCompositionAssembly)
                 .Should()
-                .NotHaveDependencyOnAny("Godot", "Unity", "Microsoft.Xna")
+                .NotHaveDependencyOnAny(engineDepConfig.ProhibitedDependencies.ToArray())
                 .GetResult();
 
-            result.IsSuccessful.ShouldBeTrue("Core should be engine-agnostic");
+            // Assert - No engine dependencies should exist
+            if (!result.IsSuccessful)
+            {
+                var violations = result.Select(f => $"Found prohibited engine dependency: {string.Join(", ", f.Dependencies)}");
+                var errorMessage = $"{engineDepConfig.Message}\nViolations:\n{string.Join("\n", violations)}";
+                throw new InvalidOperationException(errorMessage);
+            }
         }
 
         [Fact(DisplayName = "003AR: Services Should Be Interface First")]

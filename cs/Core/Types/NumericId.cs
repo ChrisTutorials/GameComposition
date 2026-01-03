@@ -11,9 +11,9 @@ namespace BarkMoon.GameComposition.Core.Types
     /// scenarios where string IDs would cause performance issues.
     /// 
     /// Usage examples:
-    /// - public readonly record struct ShopId(long Value) : NumericId<ShopId>;
-    /// - public readonly record struct OwnerId(long Value) : NumericId<OwnerId>;
-    /// - public readonly record struct RecipeId(long Value) : NumericId<RecipeId>;
+    /// - `public readonly record struct ShopId(long Value) : NumericId<ShopId>;`
+    /// - `public readonly record struct OwnerId(long Value) : NumericId<OwnerId>;`
+    /// - `public readonly record struct RecipeId(long Value) : NumericId<RecipeId>;`
     /// </summary>
     /// <remarks>
     /// Performance characteristics:
