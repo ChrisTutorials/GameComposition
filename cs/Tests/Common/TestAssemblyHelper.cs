@@ -83,18 +83,23 @@ namespace BarkMoon.GameComposition.Tests.Common
                 var assemblyPath = Path.Combine(baseDir, config.RelativePath);
                 if (File.Exists(assemblyPath))
                 {
+                    Assembly assembly;
                     try
                     {
-                        yield return Assembly.LoadFrom(assemblyPath);
+                        assembly = Assembly.LoadFrom(assemblyPath);
                     }
                     catch (FileNotFoundException ex)
                     {
                         Console.WriteLine($"Warning: Failed to load assembly {config.Name} from {assemblyPath}: {ex.Message}");
+                        continue;
                     }
                     catch (BadImageFormatException ex)
                     {
                         Console.WriteLine($"Warning: Assembly {config.Name} at {assemblyPath} is not a valid .NET assembly: {ex.Message}");
+                        continue;
                     }
+                    
+                    yield return assembly;
                 }
                 else
                 {
@@ -114,22 +119,22 @@ namespace BarkMoon.GameComposition.Tests.Common
             {
                 AssemblyType.CoreOnly => new[]
                 {
-                    new AssemblyConfiguration("GameComposition.Core", "framework/GameComposition/cs/Core/bin/Debug/net10.0/BarkMoon.GameComposition.Core.dll"),
-                    new AssemblyConfiguration("GridPlacement.Core", "gameplay/GridPlacement/cs/Core/bin/Debug/net10.0/BarkMoon.GridPlacement.Core.dll")
+                    new AssemblyConfiguration("GameComposition.Core", "cs/Core/bin/Debug/net9.0/BarkMoon.GameComposition.Core.dll"),
+                    new AssemblyConfiguration("GridPlacement.Core", "../../gameplay/GridPlacement/cs/Core/bin/Debug/net9.0/BarkMoon.GridPlacement.Core.dll")
                 },
                 
                 AssemblyType.CoreWithGodot => new[]
                 {
-                    new AssemblyConfiguration("GameComposition.Core", "framework/GameComposition/cs/Core/bin/Debug/net10.0/BarkMoon.GameComposition.Core.dll"),
-                    new AssemblyConfiguration("GridPlacement.Core", "gameplay/GridPlacement/cs/Core/bin/Debug/net10.0/BarkMoon.GridPlacement.Core.dll"),
-                    new AssemblyConfiguration("GridPlacement.Godot", "gameplay/GridPlacement/cs/Godot/bin/Debug/net10.0/BarkMoon.GridPlacement.Godot.dll")
+                    new AssemblyConfiguration("GameComposition.Core", "cs/Core/bin/Debug/net9.0/BarkMoon.GameComposition.Core.dll"),
+                    new AssemblyConfiguration("GridPlacement.Core", "../../gameplay/GridPlacement/cs/Core/bin/Debug/net9.0/BarkMoon.GridPlacement.Core.dll"),
+                    new AssemblyConfiguration("GridPlacement.Godot", "../../gameplay/GridPlacement/cs/Godot/bin/Debug/net9.0/BarkMoon.GridPlacement.Godot.dll")
                 },
                 
                 AssemblyType.All => new[]
                 {
-                    new AssemblyConfiguration("GameComposition.Core", "framework/GameComposition/cs/Core/bin/Debug/net10.0/BarkMoon.GameComposition.Core.dll"),
-                    new AssemblyConfiguration("GridPlacement.Core", "gameplay/GridPlacement/cs/Core/bin/Debug/net10.0/BarkMoon.GridPlacement.Core.dll"),
-                    new AssemblyConfiguration("GridPlacement.Godot", "gameplay/GridPlacement/cs/Godot/bin/Debug/net10.0/BarkMoon.GridPlacement.Godot.dll")
+                    new AssemblyConfiguration("GameComposition.Core", "cs/Core/bin/Debug/net9.0/BarkMoon.GameComposition.Core.dll"),
+                    new AssemblyConfiguration("GridPlacement.Core", "../../gameplay/GridPlacement/cs/Core/bin/Debug/net9.0/BarkMoon.GridPlacement.Core.dll"),
+                    new AssemblyConfiguration("GridPlacement.Godot", "../../gameplay/GridPlacement/cs/Godot/bin/Debug/net9.0/BarkMoon.GridPlacement.Godot.dll")
                     // Add more assemblies as they are created
                 },
                 
@@ -140,8 +145,8 @@ namespace BarkMoon.GameComposition.Tests.Common
         /// <summary>
         /// Configuration for a test assembly.
         /// </summary>
-        /// <param name="name">Display name of the assembly</param>
-        /// <param name="relativePath">Relative path from plugin base directory</param>
+        /// <param name="Name">Display name of the assembly</param>
+        /// <param name="RelativePath">Relative path from plugin base directory</param>
         private record AssemblyConfiguration(string Name, string RelativePath);
     }
 }

@@ -33,11 +33,14 @@ required_service_interfaces:
 
 # Domain patterns for auto-discovery
 domain_patterns:
+  - "Bootstrap"      # Infrastructure/composition root
   - "Targeting"
   - "Manipulation" 
+  - "Placement"
   - "Cursor"
   - "Grid"
   - "Input"
+  - "Object"
 
 # Service patterns for auto-discovery
 service_patterns:
@@ -77,6 +80,211 @@ viewmodel_patterns:
 orchestrator_patterns:
   - "*Orchestrator"
   - "*Workflow"
+
+# Input processing patterns (architectural enforcement)
+input_processing:
+  # UserScopeNode is the SSOT for input processing
+  input_ownership_ssot:
+    - "*UserScopeNode"
+    - "*UserScopeRoot"
+  
+  # Prohibited patterns (violations of input ownership)
+  prohibited_patterns:
+    - "DomainInputAdapter"
+    - "*DomainInputAdapter"
+    - "*InputAdapter"  # Added to catch CursorInputAdapter2D violation
+  
+  # Correct patterns for domain input processing
+  domain_input_processors:
+    - "*InputProcessor"
+    - "*DomainInputProcessor"
+  
+  # Input router pattern (correct)
+  input_routers:
+    - "*InputRouter"
+    - "*Router"
+  
+  # Expected violations for RED/GREEN testing
+  expected_violations:
+    count: 1  # Currently RED: Expect CursorInputAdapter2D violation
+    types:
+      - "CursorInputAdapter2D"  # This should be removed when architecture is fixed
+    fix_instructions: |
+      1. Delete CursorInputAdapter2D.cs (violates input ownership)
+      2. Move input processing to DomainInputProcessor
+      3. Update CursorController2D to only consume view model updates
+      4. Ensure input flows: UserScopeNode → InputRouter → DomainInputProcessor
+
+# ViewModel Event Architecture Configuration
+viewmodel_event_architecture:
+  # Required components for each domain
+  required_components:
+    cursor_domain:
+      - "CursorViewModel"      # EXISTS - Struct for visual data
+      - "CursorPresenter"       # EXISTS - Event to ViewModel transformation
+      - "CursorHybridEventAdapter"  # EXISTS - Dual C# events + Godot signals
+      - "CursorController2D"     # EXISTS - Node that consumes ViewModel
+    
+    targeting_domain:
+      - "TargetingViewModel"    # EXISTS - Struct for visual data
+      - "TargetingPresenter"     # EXISTS - Event to ViewModel transformation
+      - "TargetingHybridEventAdapter"  # EXISTS - Dual C# events + Godot signals
+      - "TargetingController2D"  # EXISTS - Node that consumes ViewModel
+    
+    placement_domain:
+      - "PlacementViewModel"     # MISSING - Struct for visual data
+      - "PlacementPresenter"      # NEEDS REFACTOR - Wrong pattern currently
+      - "PlacementHybridEventAdapter"  # MISSING - Replace legacy PlacementEventAdapter
+      - "PlacementController2D"   # MISSING - Node that consumes ViewModel
+    
+    manipulation_domain:
+      - "ManipulationViewModel"  # MISSING - Struct for visual data
+      - "ManipulationPresenter"   # MISSING - Event to ViewModel transformation
+      - "ManipulationHybridEventAdapter"  # MISSING - Dual C# events + Godot signals
+      - "ManipulationController2D" # MISSING - Node that consumes ViewModel
+    
+    grid_domain:
+      - "GridViewModel"          # MISSING - Struct for visual data (may not be needed)
+      - "GridPresenter"          # MISSING - Event to ViewModel transformation
+      - "GridHybridEventAdapter"  # MISSING - Dual C# events + Godot signals
+      - "GridController2D"       # MISSING - Node that consumes ViewModel
+
+  # Expected violations for RED/GREEN testing
+  expected_violations:
+    total_count: 13  # Currently RED: 13 missing components across domains
+    cursor_domain: 0  # COMPLETE - No violations
+    targeting_domain: 4  # MISSING - All 4 components missing
+    placement_domain: 4  # MISSING - All 4 components missing (1 needs refactor)
+    manipulation_domain: 4  # MISSING - All 4 components missing
+    grid_domain: 4  # MISSING - All 4 components missing (may not be needed)
+    
+  # Legacy patterns that need refactoring
+  legacy_patterns:
+    placement_event_adapter:
+      name: "PlacementEventAdapter"
+      issue: "Uses OrchestratorOutput instead of ViewModel"
+      replacement: "PlacementHybridEventAdapter"
+      fix_instructions: |
+        1. Create PlacementViewModel struct
+        2. Refactor PlacementPresenter to emit PlacementViewModel
+        3. Replace PlacementEventAdapter with PlacementHybridEventAdapter
+        4. Create PlacementController2D to consume PlacementViewModel
+        5. Ensure dual C# events + Godot signals pattern
+
+  # ViewModel validation rules
+  viewmodel_rules:
+    must_be_struct: true
+    no_methods: true  # Pure data only
+    allowed_types:
+      - "Core.*"  # Core types from GridPlacement or GameComposition
+      - "primitive"  # bool, int, float, string, etc.
+      - "Nullable<primitive>"  # Optional primitive values
+    forbidden_types:
+      - "Dictionary<string, object>"
+      - "object"
+      - "Godot.*"  # No Godot types in Core ViewModels
+
+  # Presenter validation rules  
+  presenter_rules:
+    must_implement: "IDisposable"
+    must_have_event: "ViewModelUpdated"
+    must_depend_on: "IEventBus"
+    forbidden_dependencies:
+      - "Godot.*"  # No Godot types in presenters
+    namespace_pattern: "*.Presenters.*"
+
+  # HybridEventAdapter validation rules
+  hybrid_event_adapter_rules:
+    must_implement: "IEventAdapter<T>"
+    must_inherit: "Node"
+    must_have_csharp_event: "CSharpEvent"
+    must_have_property: "GodotSignalName"
+    must_have_signal_attributes: "[Signal]"
+    namespace_pattern: "*.Godot.*"
+    naming_pattern: "*HybridEventAdapter"
+
+  # Controller Node validation rules
+  controller_rules:
+    must_inherit: "Node"
+    must_be_in_godot_namespace: true
+    must_consume_viewmodels: true
+    forbidden_ownership:
+      - "*Service"
+      - "*Workflow" 
+      - "*Presenter"
+      - "*Orchestrator"
+    must_have_hybrid_adapter: true
+    naming_pattern: "*Controller2D"
+
+  # ViewModel validation rules
+  viewmodel_rules:
+    core_viewmodels:
+      must_be_struct: true
+      must_be_in_core_namespace: true
+      must_use_core_types: true
+      forbidden_members:
+        - "methods"
+        - "events"
+        - "fields"
+      allowed_members:
+        - "properties"
+      naming_pattern: "*ViewModel"
+      namespace_pattern: "BarkMoon.GridPlacement.Core.*"
+      allowed_type_patterns:
+        - "BarkMoon.GridPlacement.Core.*"
+        - "BarkMoon.GameComposition.Core.*"
+        - "primitive"
+        - "string"
+        - "decimal"
+        - "Nullable<primitive>"
+      
+    godot_viewmodels:
+      must_be_struct: true
+      must_be_in_godot_namespace: true
+      must_use_godot_types: true
+      forbidden_members:
+        - "methods"
+        - "events"
+        - "fields"
+      allowed_members:
+        - "properties"
+      naming_pattern: "*ViewModel"
+      namespace_pattern: "BarkMoon.GridPlacement.Godot.*"
+      allowed_type_patterns:
+        - "Godot.*"
+        - "primitive"
+        - "string"
+        - "decimal"
+        - "Nullable<primitive>"
+      
+    converters:
+      must_be_class: true
+      must_be_in_godot_namespace: true
+      must_have_convert_method: true
+      naming_pattern: "*Converter"
+      required_method: "ConvertToGodot"
+      namespace_pattern: "BarkMoon.GridPlacement.Godot.*"
+      
+    # Core/Godot pairing requirements
+    pairing_rules:
+      require_core_godot_pairs: true
+      core_to_godot_suffix: "Godot"
+      godot_to_core_suffix: "Core"
+      missing_pair_violation_message: "Missing {missing_type}ViewModel - {existing_type}ViewModel exists without {missing_type} counterpart"
+      
+    # Test configuration
+    test_configuration:
+      expected_violations: 0  # GREEN state: proper Core/Godot separation
+      violation_message_format: "GREEN = Core/Godot separation with converters, RED = Missing Core/Godot pairing or converters"
+      success_messages:
+        - "Core ViewModels in Core namespace with Core types"
+        - "Godot ViewModels in Godot namespace with Godot types"
+        - "All Core/Godot pairs have corresponding converters"
+        - "Clean separation between Core data and Godot integration"
+      failure_messages:
+        - "Ensure Core/Godot ViewModel pairs exist with proper types and converters"
+        - "Pattern: Core{Domain}ViewModel (Core types) + Godot{Domain}ViewModel (Godot types) + {Domain}Converter"
+        - "Purpose: Core ViewModels for performance, Godot ViewModels for signal compatibility"
 
 # Assembly discovery patterns
 assembly_discovery:
@@ -151,6 +359,135 @@ prohibited_patterns:
       - "Tests"
       - "Examples"
 
+# DI Architecture Strategy Rules
+# Enforces: Pure Resource for Plugins, Core-only for GameComposition, AutoInject for Games
+di_architecture_strategy:
+  
+  # Layer 1: Commercial Plugins - Pure Resource Pattern
+  commercial_plugins:
+    enabled: true
+    target_assemblies:
+      - "GridPlacement.Core"
+      - "GridPlacement.Godot"
+      - "WorldTime.Core"
+      - "WorldTime.Godot"
+      - "ItemDrops.Core"
+      - "ItemDrops.Godot"
+    
+    # Prohibited third-party DI libraries
+    prohibited_packages:
+      - "Chickensoft.AutoInject"
+      - "Chickensoft.Introspection"
+      - "DryIoc"
+      - "Autofac"
+      - "Microsoft.Extensions.DependencyInjection"
+    message: "Commercial plugins must not depend on third-party DI libraries. Use Pure Resource pattern instead."
+    
+    # Required pattern for service resolution in Godot nodes
+    required_di_pattern:
+      pattern: "[Export] ServiceRegistryResource"
+      message: "Plugin nodes must use [Export] ServiceRegistryResource for dependency injection."
+    
+    # Prohibited tree traversal patterns
+    prohibited_tree_traversal:
+      patterns:
+        - "GetParent()"
+        - "while (current"
+        - "TryResolveRegistry"
+      contexts:
+        - "*.Godot.*"
+      message: "Tree traversal for service resolution is prohibited. Use [Export] ServiceRegistryResource instead."
+  
+  # Layer 2: GameComposition.Core - Engine Agnostic
+  framework_core:
+    enabled: true
+    target_assemblies:
+      - "GameComposition.Core"
+    
+    # Prohibited engine dependencies
+    prohibited_dependencies:
+      - "Godot"
+      - "Unity"
+      - "Unreal"
+      - "Chickensoft.*"
+    message: "GameComposition.Core must remain engine-agnostic. No Godot/Unity/Unreal dependencies."
+    
+    # Required components
+    required_components:
+      - "ServiceRegistry"
+      - "IServiceScope"
+      - "ServiceLifetime"
+    
+    # Namespace requirements
+    namespace_requirements:
+      di_namespace: "BarkMoon.GameComposition.Core.Services.DI"
+      interfaces_namespace: "BarkMoon.GameComposition.Core.Interfaces"
+  
+  # Layer 3: Game Projects - AutoInject Allowed
+  game_projects:
+    enabled: true
+    target_assemblies:
+      - "Thistletide.Godot"
+      - "Thistletide.Game"
+    
+    # Allowed DI libraries (only in game projects)
+    allowed_packages:
+      - "Chickensoft.AutoInject"
+      - "Chickensoft.Introspection"
+    message: "Game projects may use Chickensoft AutoInject for convenience."
+    
+    # Required bridge pattern
+    required_bridge:
+      pattern: "IProvider"
+      message: "Game projects using AutoInject must implement IProvider to bridge to ServiceRegistry."
+  
+  # ServiceRegistryResource requirements
+  service_registry_resource:
+    enabled: true
+    required_class: "ServiceRegistryResource"
+    required_namespace: "*.Godot.*"
+    must_inherit: "Resource"
+    required_attribute: "[GlobalClass]"
+    required_methods:
+      - "Initialize"
+      - "TryResolve"
+    message: "ServiceRegistryResource must be a GlobalClass Resource with Initialize and TryResolve methods."
+  
+  # Expected violations for RED/GREEN testing
+  expected_violations:
+    current_state: "GREEN"  # Architecture fixed - Pure Resource pattern applied
+    tree_traversal_violations:
+      count: 0  # All violations fixed
+      patterns: []  # No remaining violations
+    fix_instructions: |
+      All TryResolveRegistry() methods have been replaced with [Export] ServiceRegistryResource.
+      Nodes now use Pure Resource pattern for dependency injection.
+
+  # Stale namespace detection
+  stale_namespaces:
+    enabled: true
+    prohibited_namespaces:
+      - "Godot.Integration.DI"  # Removed - never existed, was placeholder
+    message: "Godot.Integration.DI namespace was removed. Use BarkMoon.GameComposition.Core.Services.DI instead."
+    target_assemblies:
+      - "GridPlacement.Godot"
+      - "GridPlacement.Core"
+
+  # Non-Node adapter DI pattern
+  adapter_di_pattern:
+    enabled: true
+    description: "Non-Node adapters (plain C# classes in Godot layer) should receive dependencies via constructor"
+    target_patterns:
+      - "*Adapter"
+      - "*Bridge"
+    allowed_di_patterns:
+      - "constructor_injection"  # Pass ServiceRegistry via constructor
+      - "method_injection"       # Pass services via Initialize() method
+    prohibited_di_patterns:
+      - "tree_traversal"         # GetParent() loops
+      - "static_service_locator" # Global static access
+    message: "Non-Node adapters must receive dependencies via constructor or Initialize() method, not tree traversal."
+
 # Event architecture rules
 event_architecture:
   # Required: Event interfaces must live in Core
@@ -223,6 +560,142 @@ service_based_architecture:
       - "*Workflow"
       - "*Orchestrator"
     layer: "Core"
+
+# ObjectService Architecture Configuration
+object_service_architecture:
+  # Required: Framework interface in GameComposition.Core
+  framework_interface:
+    enabled: true
+    interface_name: "IObjectService"
+    expected_location: "GameComposition.Core.Services"
+    namespace_pattern: "BarkMoon.GameComposition.Core.Services"
+    
+  # Required: Plugin implementations in Godot layer
+  plugin_implementations:
+    enabled: true
+    implementation_pattern: "*ObjectService"
+    expected_location: "*.Godot.*.Services"
+    namespace_pattern: "BarkMoon.*.Godot.*.Services"
+    
+  # Required: Engine-agnostic terminology
+  engine_agnostic_naming:
+    enabled: true
+    prohibited_terms:
+      - "Scene"
+      - "SceneService"
+      - "GameObject"  # Unity-specific
+      - "Actor"        # Unreal-specific
+    required_terms:
+      - "Object"
+      - "ObjectService"
+      - "InstantiateObject"
+      - "AddObjectToWorld"
+      - "RemoveObjectFromWorld"
+      - "DestroyObject"
+    message: "ObjectService must use engine-agnostic terminology. Avoid engine-specific terms like 'Scene', 'GameObject', or 'Actor'."
+    
+  # Required: Core interface methods
+  required_interface_methods:
+    enabled: true
+    required_methods:
+      - "InstantiateObject"
+      - "AddObjectToWorld"
+      - "RemoveObjectFromWorld"
+      - "DestroyObject"
+      - "SetObjectPosition"
+      - "IsObjectInWorld"
+      - "CreateObject"
+      - "GetValidationIssues"
+    message: "IObjectService must implement all required object lifecycle methods."
+    
+  # Prohibited: Engine-specific types in interface
+  engine_types_in_interface:
+    enabled: true
+    prohibited_types:
+      - "Node"
+      - "PackedScene"
+      - "GameObject"
+      - "Actor"
+      - "Vector2"
+      - "Vector3"
+    allowed_types:
+      - "object"
+      - "object?"
+    message: "IObjectService interface must use only 'object' types to remain engine-agnostic. Engine-specific types should only be in implementations."
+    
+  # Required: Implementation can use engine types
+  engine_types_in_implementation:
+    enabled: true
+    allowed_implementation_types:
+      - "Node"
+      - "PackedScene"
+      - "Vector2"
+      - "Vector3"
+      - "Transform2D"
+      - "Transform3D"
+    message: "ObjectService implementations can use engine-specific types for their target engine."
+    
+  # Expected violations for migration period
+  migration_violations:
+    enabled: true
+    deprecated_patterns:
+      - "ISceneService"
+      - "SceneService"
+    migration_message: "ISceneService is deprecated. Migrate to IObjectService for engine-agnostic object management."
+    allowed_until: "2025-02-01"  # Migration deadline
+
+# Results Interface Hierarchy Configuration
+results_interface_hierarchy:
+  # Required: IValidationResult must inherit from IOperationResult
+  interface_inheritance:
+    enabled: true
+    required_hierarchy:
+      - interface: "IValidationResult"
+        must_inherit_from: "IOperationResult"
+        location: "GameComposition.Core.Results"
+        message: "IValidationResult must inherit from IOperationResult for cross-plugin compatibility"
+    
+  # Required: ValidationResult must implement IValidationResult  
+  class_implementation:
+    enabled: true
+    class: "ValidationResult"
+    must_implement: "IValidationResult"
+    location: "GameComposition.Core.Results"
+    message: "ValidationResult must implement IValidationResult interface"
+    
+  # Required: Domain results must inherit from ValidationResult
+  domain_results:
+    enabled: true
+    pattern: "*Result"
+    must_inherit_from: "ValidationResult"
+    exclude_framework_class: true
+    message: "Domain results must inherit from ValidationResult for operation result pattern"
+    
+  # Naming conventions
+  naming_conventions:
+    enabled: true
+    interfaces:
+      must_start_with: "I"
+      must_end_with: "Result"
+    classes:
+      must_not_start_with: "I"  # Except ValidationResult
+      must_end_with: "Result"  # Operation result pattern
+      exceptions:
+        - "ValidationResult"  # Framework-level class
+        - "PlacementReport"   # Domain-specific report
+    
+  # Expected violations for RED/GREEN testing
+  expected_violations:
+    current_state: "RED"  # Architecture needs implementation
+    missing_interfaces:
+      - "IValidationResult"  # Need to create
+    missing_implementations:
+      - "ValidationResult:IValidationResult"  # Need to update
+    fix_instructions: |
+      1. Create IValidationResult : IOperationResult interface
+      2. Update ValidationResult to implement IValidationResult
+      3. Ensure domain results inherit from ValidationResult
+      4. Follow naming conventions for consistency
 
 # Test configuration
 test_configuration:

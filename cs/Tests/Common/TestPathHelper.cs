@@ -18,7 +18,9 @@ namespace BarkMoon.GameComposition.Tests.Common
         {
             // Navigate from test output directory to plugins directory
             var currentDir = Directory.GetCurrentDirectory();
-            return Path.GetFullPath(Path.Combine(currentDir, "..", "..", "..", "..", "..", "..", "..", "..", "plugins"));
+            // Current: G:\dev\game\plugins\framework\GameComposition\cs\Tests\Architectural\bin\ArchitecturalTests\net9.0
+            // Target:   G:\dev\game\plugins
+            return Path.GetFullPath(Path.Combine(currentDir, "..", "..", "..", "..", "..", ".."));
         }
 
         /// <summary>
@@ -49,9 +51,9 @@ namespace BarkMoon.GameComposition.Tests.Common
         /// Gets the GameComposition Core build directory.
         /// </summary>
         /// <param name="configuration">Build configuration (default: Debug)</param>
-        /// <param name="targetFramework">Target framework (default: net10.0)</param>
+        /// <param name="targetFramework">Target framework (default: net9.0)</param>
         /// <returns>Full path to the GameComposition.Core build directory</returns>
-        public static string GetGameCompositionCoreBuildDirectory(string configuration = "Debug", string targetFramework = "net10.0")
+        public static string GetGameCompositionCoreBuildDirectory(string configuration = "Debug", string targetFramework = "net9.0")
         {
             return Path.Combine(
                 GetFrameworkDirectory(),
@@ -64,9 +66,9 @@ namespace BarkMoon.GameComposition.Tests.Common
         /// Gets the GridPlacement Core build directory.
         /// </summary>
         /// <param name="configuration">Build configuration (default: Debug)</param>
-        /// <param name="targetFramework">Target framework (default: net10.0)</param>
+        /// <param name="targetFramework">Target framework (default: net9.0)</param>
         /// <returns>Full path to the GridPlacement.Core build directory</returns>
-        public static string GetGridPlacementCoreBuildDirectory(string configuration = "Debug", string targetFramework = "net10.0")
+        public static string GetGridPlacementCoreBuildDirectory(string configuration = "Debug", string targetFramework = "net9.0")
         {
             return Path.Combine(
                 GetGameplayDirectory(),
@@ -79,9 +81,9 @@ namespace BarkMoon.GameComposition.Tests.Common
         /// Gets the GridPlacement Godot build directory.
         /// </summary>
         /// <param name="configuration">Build configuration (default: Debug)</param>
-        /// <param name="targetFramework">Target framework (default: net10.0)</param>
+        /// <param name="targetFramework">Target framework (default: net9.0)</param>
         /// <returns>Full path to the GridPlacement.Godot build directory</returns>
-        public static string GetGridPlacementGodotBuildDirectory(string configuration = "Debug", string targetFramework = "net10.0")
+        public static string GetGridPlacementGodotBuildDirectory(string configuration = "Debug", string targetFramework = "net9.0")
         {
             return Path.Combine(
                 GetGameplayDirectory(),
@@ -95,9 +97,9 @@ namespace BarkMoon.GameComposition.Tests.Common
         /// </summary>
         /// <param name="assemblyName">Name of the assembly (e.g., "GameComposition.Core")</param>
         /// <param name="configuration">Build configuration (default: Debug)</param>
-        /// <param name="targetFramework">Target framework (default: net10.0)</param>
+        /// <param name="targetFramework">Target framework (default: net9.0)</param>
         /// <returns>Full path to the assembly file</returns>
-        public static string GetAssemblyPath(string assemblyName, string configuration = "Debug", string targetFramework = "net10.0")
+        public static string GetAssemblyPath(string assemblyName, string configuration = "Debug", string targetFramework = "net9.0")
         {
             var assemblyFileName = $"BarkMoon.{assemblyName}.dll";
             

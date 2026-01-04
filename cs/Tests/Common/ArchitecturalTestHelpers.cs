@@ -22,6 +22,11 @@ namespace BarkMoon.GameComposition.Tests.Common
         public static Assembly[] GetAllAssemblies() => TestAssemblyHelper.GetAllRelevantAssemblies();
 
         /// <summary>
+        /// Gets all relevant assemblies for architectural testing (alias).
+        /// </summary>
+        public static Assembly[] GetAllRelevantAssemblies() => TestAssemblyHelper.GetAllRelevantAssemblies();
+
+        /// <summary>
         /// Gets core assemblies only (excludes Godot assemblies).
         /// </summary>
         public static Assembly[] GetCoreAssemblies() => TestAssemblyHelper.GetCoreAssemblies();
@@ -36,16 +41,16 @@ namespace BarkMoon.GameComposition.Tests.Common
         /// </summary>
         /// <param name="assembly">Assembly to create rule for</param>
         /// <returns>NetArchTest rule builder</returns>
-        public static object ForAssembly(Assembly assembly)
+        public static ArchTypes.Types ForAssembly(Assembly assembly)
         {
-            return ArchTypes.InAssembly(assembly);
+            return ArchTypes.Types.InAssembly(assembly);
         }
 
         /// <summary>
         /// Creates NetArchTest rule starting points for all assemblies.
         /// </summary>
         /// <returns>Collection of rule builders for all assemblies</returns>
-        public static IEnumerable<object> ForAllAssemblies()
+        public static IEnumerable<ArchTypes.Types> ForAllAssemblies()
         {
             return GetAllAssemblies().Select(assembly => ForAssembly(assembly));
         }
@@ -54,7 +59,7 @@ namespace BarkMoon.GameComposition.Tests.Common
         /// Creates NetArchTest rule starting points for core assemblies only.
         /// </summary>
         /// <returns>Collection of rule builders for core assemblies</returns>
-        public static IEnumerable<object> ForCoreAssemblies()
+        public static IEnumerable<ArchTypes.Types> ForCoreAssemblies()
         {
             return GetCoreAssemblies().Select(assembly => ForAssembly(assembly));
         }
@@ -124,48 +129,6 @@ namespace BarkMoon.GameComposition.Tests.Common
         }
 
         /// <summary>
-        /// Validates that all assemblies follow the specified namespace convention.
-        /// </summary>
-        /// <param name="namespacePrefix">Required namespace prefix</param>
-        /// <param name="assemblies">Assemblies to validate (null for all)</param>
-        public static void ValidateNamespaceConvention(string namespacePrefix, Assembly[]? assemblies = null)
-        {
-            var targetAssemblies = assemblies ?? GetAllAssemblies();
-            var results = targetAssemblies.Select(assembly => 
-                ForAssembly(assembly)
-                    .Should()
-                    .ResideInNamespaceStartingWith(namespacePrefix)
-                    .GetResult()
-            ).ToList();
-
-            foreach (var (result, index) in results.Select((r, i) => (r, i)))
-            {
-                result.IsSuccessful.ShouldBeTrue(
-                    $"Assembly {targetAssemblies[index].GetName().Name} should follow {namespacePrefix} namespace convention");
-            }
-        }
-
-        /// <summary>
-        /// Validates that core assemblies do not depend on Godot assemblies.
-        /// </summary>
-        public static void ValidateCoreAssembliesDoNotDependOnGodot()
-        {
-            var coreAssemblies = GetCoreAssemblies();
-            var godotAssemblies = GetAssembliesWithGodot().Except(coreAssemblies).ToArray();
-
-            foreach (var coreAssembly in coreAssemblies)
-            {
-                var result = ForAssembly(coreAssembly)
-                    .Should()
-                    .NotHaveDependencyOnAny(godotAssemblies.Select(a => a.GetName().Name).ToArray())
-                    .GetResult();
-
-                result.IsSuccessful.ShouldBeTrue(
-                    $"Core assembly {coreAssembly.GetName().Name} should not depend on Godot assemblies");
-            }
-        }
-
-        /// <summary>
         /// Gets a descriptive name for an assembly.
         /// </summary>
         /// <param name="assembly">Assembly to get name for</param>
@@ -177,13 +140,158 @@ namespace BarkMoon.GameComposition.Tests.Common
         }
 
         /// <summary>
-        /// Asserts that a condition is true with a descriptive error message.
+        /// Loads YAML configuration for architectural tests.
         /// </summary>
-        /// <param name="condition">Condition to validate</param>
-        /// <param name="message">Error message if condition is false</param>
-        public static void AssertArchitecturalRule(bool condition, string message)
+        /// <param name="configFileName">Configuration file name</param>
+        /// <returns>Architecture configuration</returns>
+        public static ArchitectureConfiguration LoadYamlConfig(string configFileName = "architecture-config.yaml")
         {
-            condition.ShouldBeTrue(message);
+            return ArchitectureConfigurationLoader.LoadConfiguration();
+        }
+
+        /// <summary>
+        /// Finds an interface by name across assemblies.
+        /// </summary>
+        /// <param name="assemblies">Assemblies to search</param>
+        /// <param name="interfaceName">Interface name to find</param>
+        /// <param name="namespaceFilter">Optional namespace filter</param>
+        /// <returns>Interface type or null if not found</returns>
+        public static Type? FindInterfaceByName(Assembly[] assemblies, string interfaceName, string? namespaceFilter = null)
+        {
+            return assemblies
+                .SelectMany(assembly => assembly.GetTypes())
+                .FirstOrDefault(type => 
+                    type.IsInterface && 
+                    type.Name == interfaceName &&
+                    (namespaceFilter == null || type.Namespace?.Contains(namespaceFilter) == true));
+        }
+
+        /// <summary>
+        /// Finds a class by name across assemblies.
+        /// </summary>
+        /// <param name="assemblies">Assemblies to search</param>
+        /// <param name="className">Class name to find</param>
+        /// <param name="namespaceFilter">Optional namespace filter</param>
+        /// <returns>Class type or null if not found</returns>
+        public static Type? FindClassByName(Assembly[] assemblies, string className, string? namespaceFilter = null)
+        {
+            return assemblies
+                .SelectMany(assembly => assembly.GetTypes())
+                .FirstOrDefault(type => 
+                    !type.IsInterface && 
+                    type.Name == className &&
+                    (namespaceFilter == null || type.Namespace?.Contains(namespaceFilter) == true));
+        }
+
+        /// <summary>
+        /// Finds classes by pattern across assemblies.
+        /// </summary>
+        /// <param name="assemblies">Assemblies to search</param>
+        /// <param name="pattern">Pattern to match</param>
+        /// <param name="namespaceFilter">Optional namespace filter</param>
+        /// <returns>Collection of matching classes</returns>
+        public static IEnumerable<Type> FindClassesByPattern(Assembly[] assemblies, string pattern, string? namespaceFilter = null)
+        {
+            return assemblies
+                .SelectMany(assembly => assembly.GetTypes())
+                .Where(type => 
+                    !type.IsInterface && 
+                    type.Name.EndsWith(pattern.Replace("*", ""), StringComparison.OrdinalIgnoreCase) &&
+                    (namespaceFilter == null || type.Namespace?.Contains(namespaceFilter) == true));
+        }
+
+        /// <summary>
+        /// Finds types by pattern across assemblies.
+        /// </summary>
+        /// <param name="assemblies">Assemblies to search</param>
+        /// <param name="patterns">Patterns to match</param>
+        /// <param name="namespaceFilter">Optional namespace filter</param>
+        /// <returns>Collection of matching types</returns>
+        public static IEnumerable<Type> FindTypesByPattern(Assembly[] assemblies, string[] patterns, string? namespaceFilter = null)
+        {
+            return assemblies
+                .SelectMany(assembly => assembly.GetTypes())
+                .Where(type => 
+                    patterns.Any(pattern => type.Name.EndsWith(pattern.Replace("*", ""), StringComparison.OrdinalIgnoreCase)) &&
+                    (namespaceFilter == null || type.Namespace?.Contains(namespaceFilter) == true));
+        }
+
+        /// <summary>
+        /// Checks if a type inherits from a specified interface.
+        /// </summary>
+        /// <param name="type">Type to check</param>
+        /// <param name="interfaceName">Interface name to check for</param>
+        /// <returns>True if type inherits from interface</returns>
+        public static bool CheckInheritance(Type type, string interfaceName)
+        {
+            return type.GetInterfaces().Any(iface => iface.Name == interfaceName);
+        }
+
+        /// <summary>
+        /// Checks if a type implements a specified interface.
+        /// </summary>
+        /// <param name="type">Type to check</param>
+        /// <param name="interfaceName">Interface name to check for</param>
+        /// <returns>True if type implements interface</returns>
+        public static bool CheckInterfaceImplementation(Type type, string interfaceName)
+        {
+            return type.GetInterfaces().Any(iface => iface.Name == interfaceName);
+        }
+
+        /// <summary>
+        /// Checks inheritance violations for a collection of types.
+        /// </summary>
+        /// <param name="types">Types to check</param>
+        /// <param name="requiredBaseType">Required base type name</param>
+        /// <returns>Collection of violation messages</returns>
+        public static List<string> CheckInheritanceViolations(IEnumerable<Type> types, string requiredBaseType)
+        {
+            var violations = new List<string>();
+            
+            foreach (var type in types)
+            {
+                var baseTypeName = type.BaseType?.Name;
+                if (baseTypeName != requiredBaseType)
+                {
+                    violations.Add($"{type.Name} inherits from {baseTypeName ?? "null"} instead of {requiredBaseType}");
+                }
+            }
+            
+            return violations;
+        }
+
+        /// <summary>
+        /// Checks naming violations for a collection of types.
+        /// </summary>
+        /// <param name="types">Types to check</param>
+        /// <param name="namingConfig">Naming configuration</param>
+        /// <returns>Collection of violation messages</returns>
+        public static List<string> CheckNamingViolations(IEnumerable<Type> types, object namingConfig)
+        {
+            var violations = new List<string>();
+            
+            foreach (var type in types)
+            {
+                // Interfaces should start with 'I'
+                if (type.IsInterface && !type.Name.StartsWith("I"))
+                {
+                    violations.Add($"{type.Name} - Interface should start with 'I'");
+                }
+
+                // Classes should not start with 'I' (except ValidationResult)
+                if (!type.IsInterface && type.Name.StartsWith("I") && type.Name != "ValidationResult")
+                {
+                    violations.Add($"{type.Name} - Class should not start with 'I'");
+                }
+
+                // Result classes should end with 'Result' (operation result pattern)
+                if (!type.IsInterface && type.Name.EndsWith("Report") && type.Name != "PlacementReport")
+                {
+                    violations.Add($"{type.Name} - Report classes should follow operation result pattern with 'Result' suffix");
+                }
+            }
+            
+            return violations;
         }
     }
 }

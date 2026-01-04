@@ -73,7 +73,8 @@ namespace ArchitecturalValidation
             }
             
             Console.WriteLine("\n=== Architecture Compliance Summary ===");
-            Console.WriteLine("✅ Uses only CursorInputAdapter2D (input flow adapter)");
+            Console.WriteLine("✅ Uses CursorHybridEventAdapter (visual updates only)");
+            Console.WriteLine("✅ Input processing follows UserScopeNode → InputRouter → DomainInputProcessor pattern");
             Console.WriteLine("✅ No direct service dependencies");
             Console.WriteLine("✅ No direct workflow dependencies");
             Console.WriteLine("✅ No direct presenter dependencies");

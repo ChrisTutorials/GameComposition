@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BarkMoon.GameComposition.Core.Results
 {
@@ -67,14 +68,26 @@ namespace BarkMoon.GameComposition.Core.Results
 
     /// <summary>
     /// Represents validation results for framework and domains.
+    /// Implements IValidationResult for cross-plugin compatibility.
     /// </summary>
-    public class ValidationResult
+    public class ValidationResult : IValidationResult
     {
         public bool IsValid { get; protected set; }
-        public List<ValidationError> Errors { get; protected set; } = new();
-        public List<string> Warnings { get; protected set; } = new();
-        public List<string> Notes { get; protected set; } = new();
-        public Dictionary<string, object> Context { get; protected set; } = new();
+        protected List<ValidationError> Errors { get; set; } = new();
+        protected List<string> Warnings { get; set; } = new();
+        protected List<string> Notes { get; set; } = new();
+        protected Dictionary<string, object> Context { get; set; } = new();
+
+        // IValidationResult explicit interface implementation
+        IReadOnlyList<ValidationError> IValidationResult.Errors => Errors.AsReadOnly();
+        IReadOnlyList<string> IValidationResult.Warnings => Warnings.AsReadOnly();
+        IReadOnlyList<string> IValidationResult.Notes => Notes.AsReadOnly();
+        IReadOnlyDictionary<string, object> IValidationResult.Context => Context.AsReadOnly();
+
+        // IOperationResult implementation
+        public bool IsSuccess => IsValid;
+        public IReadOnlyList<string> Issues => 
+            Errors.Select(e => e.Message).Concat(Warnings).Concat(Notes).ToList().AsReadOnly();
 
         public static ValidationResult Success() => new ValidationResult { IsValid = true };
         

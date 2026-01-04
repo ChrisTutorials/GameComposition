@@ -18,7 +18,19 @@
   <ItemGroup>
     <Compile Include="StandaloneGlobalEventBusTest.cs" />
     <Compile Include="DomainNodeOwnershipArchitectureTests.cs" />
+    <Compile Include="UserScopeInputOwnershipArchitectureTests.cs" />
+    <Compile Include="ResultsInterfaceHierarchyArchitectureTests.cs" />
+    <Compile Include="ResultsInterfaceHierarchyArchitectureTests_YAML.cs" />
+    <Compile Include="DtoPatternArchitectureTests.cs" />
+    <Compile Include="SnapshotDtoPatternDocumentationTests.cs" />
+    <Compile Include="StateDtoPatternDocumentationTests.cs" />
+    <Compile Include="PluginDtoComplianceDocumentationTests.cs" />
+    <Compile Include="EnhancedDtoPatternArchitectureTests.cs" />
+    <Compile Include="Core\ArchitectureConfigLoader.cs" />
     <Compile Include="..\Common\ArchitectureConfiguration.cs" />
+    <Compile Include="..\Common\TestAssemblyHelper.cs" />
+    <Compile Include="..\Common\TestPathHelper.cs" />
+    <Compile Include="..\Common\ArchitecturalTestHelpers.cs" />
   </ItemGroup>
 
   <ItemGroup>

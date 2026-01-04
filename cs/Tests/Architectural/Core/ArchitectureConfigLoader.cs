@@ -76,8 +76,9 @@ namespace BarkMoon.GameComposition.Tests.Architectural
             var config = new ArchitectureConfig();
 
             var currentSection = "";
-            foreach (var line in lines)
+            for (int i = 0; i < lines.Length; i++)
             {
+                var line = lines[i];
                 var trimmed = line.Trim();
                 
                 // Skip comments and empty lines
@@ -150,6 +151,10 @@ namespace BarkMoon.GameComposition.Tests.Architectural
                             
                         case "event_architecture":
                             ParseEventArchitecture(config, lines, ref i);
+                            break;
+                            
+                        case "object_service_architecture":
+                            ParseObjectServiceArchitecture(config, lines, ref i);
                             break;
                     }
                 }
@@ -335,6 +340,207 @@ namespace BarkMoon.GameComposition.Tests.Architectural
             }
         }
         
+        private static void ParseObjectServiceArchitecture(ArchitectureConfig config, string[] lines, ref int i)
+        {
+            var currentSubSection = "";
+            
+            for (i++; i < lines.Length; i++)
+            {
+                var line = lines[i].Trim();
+                if (string.IsNullOrEmpty(line) || line.StartsWith("#")) continue;
+                
+                if (line.EndsWith(":"))
+                {
+                    currentSubSection = line.Replace(":", "").ToLowerInvariant();
+                    continue;
+                }
+                
+                if (line.Contains(":"))
+                {
+                    var parts = line.Split(new[] { ':' }, 2);
+                    var key = parts[0].Trim().Replace("-", "").ToLowerInvariant();
+                    var value = parts[1].Trim();
+                    
+                    switch (currentSubSection)
+                    {
+                        case "framework_interface":
+                            ParseFrameworkInterface(config.ObjectServiceArchitecture.FrameworkInterface, key, value);
+                            break;
+                        case "plugin_implementations":
+                            ParsePluginImplementations(config.ObjectServiceArchitecture.PluginImplementations, key, value);
+                            break;
+                        case "engine_agnostic_naming":
+                            ParseEngineAgnosticNaming(config.ObjectServiceArchitecture.EngineAgnosticNaming, key, value);
+                            break;
+                        case "required_interface_methods":
+                            ParseRequiredInterfaceMethods(config.ObjectServiceArchitecture.RequiredInterfaceMethods, key, value);
+                            break;
+                        case "engine_types_in_interface":
+                            ParseEngineTypesInInterface(config.ObjectServiceArchitecture.EngineTypesInInterface, key, value);
+                            break;
+                        case "engine_types_in_implementation":
+                            ParseEngineTypesInImplementation(config.ObjectServiceArchitecture.EngineTypesInImplementation, key, value);
+                            break;
+                        case "migration_violations":
+                            ParseMigrationViolations(config.ObjectServiceArchitecture.MigrationViolations, key, value);
+                            break;
+                    }
+                }
+                else if (line.StartsWith("  ") && !line.Contains(":"))
+                {
+                    // Handle list items
+                    var listItem = line.TrimStart('-', ' ').Trim();
+                    if (!string.IsNullOrEmpty(listItem))
+                    {
+                        switch (currentSubSection)
+                        {
+                            case "engine_agnostic_naming":
+                                if (listItem.StartsWith("prohibited_terms:") || listItem.StartsWith("required_terms:"))
+                                    continue;
+                                if (listItem.StartsWith("prohibited"))
+                                    config.ObjectServiceArchitecture.EngineAgnosticNaming.ProhibitedTerms.Add(listItem.Trim('"'));
+                                else if (listItem.StartsWith("required"))
+                                    config.ObjectServiceArchitecture.EngineAgnosticNaming.RequiredTerms.Add(listItem.Trim('"'));
+                                break;
+                            case "required_interface_methods":
+                                config.ObjectServiceArchitecture.RequiredInterfaceMethods.RequiredMethods.Add(listItem.Trim('"'));
+                                break;
+                            case "engine_types_in_interface":
+                                if (listItem.StartsWith("prohibited_types:") || listItem.StartsWith("allowed_types:"))
+                                    continue;
+                                if (listItem.StartsWith("prohibited"))
+                                    config.ObjectServiceArchitecture.EngineTypesInInterface.ProhibitedTypes.Add(listItem.Trim('"'));
+                                else if (listItem.StartsWith("allowed"))
+                                    config.ObjectServiceArchitecture.EngineTypesInInterface.AllowedTypes.Add(listItem.Trim('"'));
+                                break;
+                            case "engine_types_in_implementation":
+                                if (listItem.StartsWith("allowed_implementation_types:"))
+                                    continue;
+                                config.ObjectServiceArchitecture.EngineTypesInImplementation.AllowedImplementationTypes.Add(listItem.Trim('"'));
+                                break;
+                            case "migration_violations":
+                                if (listItem.StartsWith("deprecated_patterns:"))
+                                    continue;
+                                config.ObjectServiceArchitecture.MigrationViolations.DeprecatedPatterns.Add(listItem.Trim('"'));
+                                break;
+                        }
+                    }
+                }
+                else if (!line.StartsWith("  "))
+                {
+                    // End of object_service_architecture section
+                    i--; // Back up one line
+                    break;
+                }
+            }
+        }
+        
+        private static void ParseFrameworkInterface(FrameworkInterfaceConfig config, string key, string value)
+        {
+            switch (key)
+            {
+                case "enabled":
+                    config.Enabled = bool.Parse(value);
+                    break;
+                case "interfacename":
+                    config.InterfaceName = value.Trim('"');
+                    break;
+                case "expectedlocation":
+                    config.ExpectedLocation = value.Trim('"');
+                    break;
+                case "namespacepattern":
+                    config.NamespacePattern = value.Trim('"');
+                    break;
+            }
+        }
+        
+        private static void ParsePluginImplementations(PluginImplementationsConfig config, string key, string value)
+        {
+            switch (key)
+            {
+                case "enabled":
+                    config.Enabled = bool.Parse(value);
+                    break;
+                case "implementationpattern":
+                    config.ImplementationPattern = value.Trim('"');
+                    break;
+                case "expectedlocation":
+                    config.ExpectedLocation = value.Trim('"');
+                    break;
+                case "namespacepattern":
+                    config.NamespacePattern = value.Trim('"');
+                    break;
+            }
+        }
+        
+        private static void ParseEngineAgnosticNaming(EngineAgnosticNamingConfig config, string key, string value)
+        {
+            switch (key)
+            {
+                case "enabled":
+                    config.Enabled = bool.Parse(value);
+                    break;
+                case "message":
+                    config.Message = value.Trim('"');
+                    break;
+            }
+        }
+        
+        private static void ParseRequiredInterfaceMethods(RequiredInterfaceMethodsConfig config, string key, string value)
+        {
+            switch (key)
+            {
+                case "enabled":
+                    config.Enabled = bool.Parse(value);
+                    break;
+                case "message":
+                    config.Message = value.Trim('"');
+                    break;
+            }
+        }
+        
+        private static void ParseEngineTypesInInterface(EngineTypesInInterfaceConfig config, string key, string value)
+        {
+            switch (key)
+            {
+                case "enabled":
+                    config.Enabled = bool.Parse(value);
+                    break;
+                case "message":
+                    config.Message = value.Trim('"');
+                    break;
+            }
+        }
+        
+        private static void ParseEngineTypesInImplementation(EngineTypesInImplementationConfig config, string key, string value)
+        {
+            switch (key)
+            {
+                case "enabled":
+                    config.Enabled = bool.Parse(value);
+                    break;
+                case "message":
+                    config.Message = value.Trim('"');
+                    break;
+            }
+        }
+        
+        private static void ParseMigrationViolations(MigrationViolationsConfig config, string key, string value)
+        {
+            switch (key)
+            {
+                case "enabled":
+                    config.Enabled = bool.Parse(value);
+                    break;
+                case "migrationmessage":
+                    config.MigrationMessage = value.Trim('"');
+                    break;
+                case "alloweduntil":
+                    config.AllowedUntil = value.Trim('"');
+                    break;
+            }
+        }
+        
         private static ArchitectureConfig LoadJsonConfig(string configPath)
         {
             var json = File.ReadAllText(configPath);
@@ -406,6 +612,7 @@ namespace BarkMoon.GameComposition.Tests.Architectural
         public StrongTypingConfig StrongTyping { get; set; } = new();
         public ServiceBasedArchitectureConfig ServiceBasedArchitecture { get; set; } = new();
         public EventArchitectureConfig EventArchitecture { get; set; } = new();
+        public ObjectServiceArchitectureConfig ObjectServiceArchitecture { get; set; } = new();
     }
     
     /// <summary>
@@ -530,5 +737,73 @@ namespace BarkMoon.GameComposition.Tests.Architectural
     {
         public bool Enabled { get; set; }
         public List<string> AllowedInterfaces { get; set; } = new();
+    }
+    
+    /// <summary>
+    /// Configuration for ObjectService architecture rules.
+    /// </summary>
+    public class ObjectServiceArchitectureConfig
+    {
+        public FrameworkInterfaceConfig FrameworkInterface { get; set; } = new();
+        public PluginImplementationsConfig PluginImplementations { get; set; } = new();
+        public EngineAgnosticNamingConfig EngineAgnosticNaming { get; set; } = new();
+        public RequiredInterfaceMethodsConfig RequiredInterfaceMethods { get; set; } = new();
+        public EngineTypesInInterfaceConfig EngineTypesInInterface { get; set; } = new();
+        public EngineTypesInImplementationConfig EngineTypesInImplementation { get; set; } = new();
+        public MigrationViolationsConfig MigrationViolations { get; set; } = new();
+    }
+    
+    public class FrameworkInterfaceConfig
+    {
+        public bool Enabled { get; set; }
+        public string InterfaceName { get; set; } = "IObjectService";
+        public string ExpectedLocation { get; set; } = "GameComposition.Core.Services";
+        public string NamespacePattern { get; set; } = "BarkMoon.GameComposition.Core.Services";
+    }
+    
+    public class PluginImplementationsConfig
+    {
+        public bool Enabled { get; set; }
+        public string ImplementationPattern { get; set; } = "*ObjectService";
+        public string ExpectedLocation { get; set; } = "*.Godot.*.Services";
+        public string NamespacePattern { get; set; } = "BarkMoon.*.Godot.*.Services";
+    }
+    
+    public class EngineAgnosticNamingConfig
+    {
+        public bool Enabled { get; set; }
+        public List<string> ProhibitedTerms { get; set; } = new();
+        public List<string> RequiredTerms { get; set; } = new();
+        public string Message { get; set; } = "ObjectService must use engine-agnostic terminology. Avoid engine-specific terms like 'Scene', 'GameObject', or 'Actor'.";
+    }
+    
+    public class RequiredInterfaceMethodsConfig
+    {
+        public bool Enabled { get; set; }
+        public List<string> RequiredMethods { get; set; } = new();
+        public string Message { get; set; } = "IObjectService must implement all required object lifecycle methods.";
+    }
+    
+    public class EngineTypesInInterfaceConfig
+    {
+        public bool Enabled { get; set; }
+        public List<string> ProhibitedTypes { get; set; } = new();
+        public List<string> AllowedTypes { get; set; } = new();
+        public string Message { get; set; } = "IObjectService interface must use only 'object' types to remain engine-agnostic. Engine-specific types should only be in implementations.";
+    }
+    
+    public class EngineTypesInImplementationConfig
+    {
+        public bool Enabled { get; set; }
+        public List<string> AllowedImplementationTypes { get; set; } = new();
+        public string Message { get; set; } = "ObjectService implementations can use engine-specific types for their target engine.";
+    }
+    
+    public class MigrationViolationsConfig
+    {
+        public bool Enabled { get; set; }
+        public List<string> DeprecatedPatterns { get; set; } = new();
+        public string MigrationMessage { get; set; } = "ISceneService is deprecated. Migrate to IObjectService for engine-agnostic object management.";
+        public string AllowedUntil { get; set; } = "2025-02-01";
     }
 }
